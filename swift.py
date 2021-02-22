@@ -3,6 +3,7 @@
 
 # system libraries
 import os
+import taskManager
 
 # web transaction objects
 from bottle import request, response
@@ -59,9 +60,11 @@ def get_tasks():
     'return a list of tasks sorted by submit/modify time'
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
-    task_table = taskbook_db.get_table('task')
-    tasks = [dict(x) for x in task_table.find(order_by='time')]
-    return { "tasks": tasks }
+    # task_table = taskbook_db.get_table('task')
+    # tasks = [dict(x) for x in task_table.find()]
+    # return { "tasks": tasks }
+
+    return taskManager.get_tasks(taskManager.getdate_today())
 
 @post('/api/tasks')
 def create_task():
@@ -69,21 +72,15 @@ def create_task():
     try:
         data = request.json
         for key in data.keys():
-            assert key in ["description","list"], f"Illegal key '{key}'"
+            assert key in ["description", "list"], f"Illegal key '{key}'"
         assert type(data['description']) is str, "Description is not a string."
         assert len(data['description'].strip()) > 0, "Description is length zero."
-        assert data['list'] in ["today","tomorrow"], "List must be 'today' or 'tomorrow'"
+        assert data['list'] in ["today", "tomorrow"], "List must be 'today' or 'tomorrow'"
     except Exception as e:
-        response.status="400 Bad Request:"+str(e)
+        response.status = "400 Bad Request:" + str(e)
         return
     try:
-        task_table = taskbook_db.get_table('task')
-        task_table.insert({
-            "time": time.time(),
-            "description":data['description'].strip(),
-            "list":data['list'],
-            "completed":False
-        })
+        taskManager.insert_Tasks(data['description'].strip(), dateList=data['list'])
     except Exception as e:
         response.status="409 Bad Request:"+str(e)
     # return 200 Success
