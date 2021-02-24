@@ -1,2 +1,0 @@
-Hello world! 
-This is a test to make sure git is propperly synced up.
