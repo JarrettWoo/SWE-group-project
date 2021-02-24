@@ -13,6 +13,9 @@ from bottle import route, get, put, post, delete
 # web page template processor
 from bottle import template
 
+#for css/js
+from bottle import static_file
+
 VERSION=0.1
 
 # development server
@@ -26,6 +29,11 @@ else:
 # ---------------------------
 # web application routes
 # ---------------------------
+
+#so css file works
+@route('/static/<filename>')
+def send_static(filename):
+    return static_file(filename, root='static/')
 
 @route('/')
 @route('/tasks')

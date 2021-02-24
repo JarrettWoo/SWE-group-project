@@ -1,0 +1,26 @@
+html, body {
+	height: 100%;
+	background-color: #444
+}
+
+.small-margin {
+	margin: 5px;
+}
+.taskbook-container {
+	height: 75%;
+	margin-left: 200px;
+	margin-right: 200px;
+	border: 1px solid #6B2A00;
+	border-width: 30px 30px 10px 30px;
+	background-color:lightgray;
+}
+
+.stripe {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -52%);
+	background-color:white;
+	height:77%;
+	width:20px;
+}
