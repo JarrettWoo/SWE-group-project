@@ -21,22 +21,26 @@
 </style>
 
 <div class="w3-row taskbook-container">
-	<div class="w3-col s6 w3-container">
-		<div class="w3-row w3-xxlarge  w3-margin-bottom">
-			<h1><i>Today</i></h1>
+	<div class="w3-half w3-container s6" id="left-container">
+		<div id="leftTasks">
+			<div class="w3-row w3-xxlarge w3-margin-bottom">
+				<h1 class="title">Today</h1>
+			</div>
+			<table id="task-list-today" class="w3-table">
+			</table>
+			<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
 		</div>
-		<table id="task-list-today" class="w3-table">
-		</table>
-		<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
 	</div>
-	<div class="stripe">&nbsp;</div>
-	<div class="w3-col s6 w3-container">
-		<div class="w3-row w3-xxlarge  w3-margin-bottom">
-			<h1><i>Tomorrow</i></h1>
+	<!-- <div class="stripe">&nbsp;</div> -->
+	<div class="w3-half s6 w3-container" id="right-container">
+		<div id="rightTasks">
+			<div class="w3-row w3-xxlarge  w3-margin-bottom">
+				<h1 class="title">Tomorrow</h1>
+			</div>
+			<table id="task-list-tomorrow" class="w3-table">
+			</table>
+			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 		</div>
-		<table id="task-list-tomorrow" class="w3-table">
-		</table>
-		<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 	</div>
 </div>
 <input id="current_input" hidden value="" />
@@ -145,21 +149,31 @@
 		console.log("save item", event.target.id)
 		id = event.target.id.replace("save_edit-", "");
 		console.log("desc to save = ", $("#input-" + id).val())
-		if ((id != "today") & (id != "tomorrow")) {
-			api_update_task({ 'id': id, description: $("#input-" + id).val() },
-				function (result) {
-					console.log(result);
-					get_current_tasks();
-					$("#current_input").val("")
-				});
-		} else {
-			api_create_task({ description: $("#input-" + id).val(), list: id },
-				function (result) {
-					console.log(result);
-					get_current_tasks();
-					$("#current_input").val("")
-				});
+
+		if ($("#input-" + id).val() != "") {
+			if ((id != "today") & (id != "tomorrow")) {
+				api_update_task({ 'id': id, description: $("#input-" + id).val() },
+					function (result) {
+						console.log(result);
+						get_current_tasks();
+						$("#current_input").val("")
+					}
+				);
+			} 
+			else {
+				api_create_task({ description: $("#input-" + id).val(), list: id },
+					function (result) {
+						console.log(result);
+						get_current_tasks();
+						$("#current_input").val("")
+					}
+				);
+			}
 		}
+		else {
+			$("#input-" + id).addClass("error");
+		}
+
 	}
 
 	function undo_edit(event) {
@@ -196,7 +210,7 @@
 	function display_task(x) {
 		arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
 		completed = x.completed ? " completed" : "";
-		if ((x.id == "today") | (x.id == "tomorrow")) {
+		if ((x.id == "today") || (x.id == "tomorrow")) {
 			t = '<tr id="task-' + x.id + '" class="task">' +
 				'  <td style="width:36px"></td>' +
 				'  <td><span id="editor-' + x.id + '">' +
@@ -205,9 +219,9 @@
 				'      </span>' +
 				'  </td>' +
 				'  <td style="width:72px">' +
-				'    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
-				'    <span id="save_edit-' + x.id + '" hidden class="save_edit material-icons">done</span>' +
-				'    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
+				// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
+				'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn">Add</span>' +
+				// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
 				'  </td>' +
 				'</tr>';
 		} else {
@@ -249,7 +263,7 @@
 			$(".undo_edit").click(undo_edit);
 			$(".delete_task").click(delete_task);
 			// set all inputs to set flag
-			$("input").keypress(input_keypress);
+			// $("input").keypress(input_keypress);
 		});
 	}
 
