@@ -1,0 +1,58 @@
+html, body {
+	height: 100%;
+	background-image: repeating-linear-gradient(white 0px, white 24px, teal 25px);
+	color:#333;
+}
+
+.small-margin {
+	margin: 5px;
+}
+.taskbook-container {
+	background-color:#e6e6e6;
+	height: 75%;
+	margin-left: 200px;
+	margin-right: 200px;
+	box-shadow: 3px 2px 3px 6px #803a0c;
+	border-radius: 5px;
+	background-image: linear-gradient(to right, #ffffff00 0%, #ffffff00 49%,
+		white 50%, 
+		#ffffff00 51%, #ffffff00 100%)
+	
+}
+
+#leftTasks, #rightTasks {
+	background-color: #e6e6e6;
+	border-radius: 5px;
+	padding: 10px;
+	/* box-shadow: 2px 0px 3px 4px #6B2A00; */
+	height:100%;
+}
+
+#left-container, #right-container {
+	height:100%;
+	padding:5px;
+}
+
+.title {
+	text-align:center;
+}
+
+.btn {
+	padding: 3px 9px 3px 9px;
+	border-radius: 5px;
+}
+.btn:hover {
+	box-shadow: 0 8px 16px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+}
+.w3-button {
+	padding: 5px 8px;
+}
+.w3-input {
+	border: none;
+	border-radius: 3px;
+	padding:10px;
+	box-shadow: 0px 0px 10px 1px #33333361;
+}
+.error {
+	box-shadow: 0px 0px 0px 1px rgb(190, 22, 22);
+}
