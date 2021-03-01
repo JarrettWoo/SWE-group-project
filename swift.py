@@ -33,7 +33,6 @@ else:
 #so css file works
 @route('/static/<filename>')
 def send_static(filename):
-	print("TEST", filename)
 	return static_file(filename, root='static/')
 
 @route('/')

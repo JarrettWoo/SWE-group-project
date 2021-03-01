@@ -44,7 +44,7 @@ html, body {
 .btn:hover {
 	box-shadow: 0 8px 16px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
 }
-.w3-button {
+.small-button {
 	padding: 5px 8px;
 }
 .w3-input {
@@ -55,4 +55,11 @@ html, body {
 }
 .error {
 	box-shadow: 0px 0px 0px 1px rgb(190, 22, 22);
+}
+.form {
+	width:60%;
+	background-color: #e6e6e6;
+	padding: 50px;
+	border: 1px solid #333;
+	box-shadow: 3px 3px 20px 0px #333
 }

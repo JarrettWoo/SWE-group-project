@@ -1,4 +1,14 @@
 % include("header.tpl")
 % include("banner.tpl")
-LOGIN
+
+<form class="w3-display-middle w3-round form" action="" method="POST">
+	<label>Username</label>
+	<input class="w3-input" type="text" name="un"><br>
+
+	<label>Password</label>
+	<input class="w3-input" type="text" name="pw"><br>
+
+	<button type="Submit" class="w3-button w3-round w3-teal">Submit</button>
+</form>
+	
 % include("footer.tpl")
