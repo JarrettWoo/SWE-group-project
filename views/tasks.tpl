@@ -227,7 +227,7 @@
 		} else {
 			t = '<tr id="task-' + x.id + '" class="task">' +
 				'  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons">' + arrow + '</span></td>' +
-				'  <td><span id="description-' + x.id + '" class="description' + completed + '">' + x.description + '</span>' +
+				'  <td><span style="background-color:' + x.color + '" id="description-' + x.id + '" class="description' + completed + '">' + x.description + '</span>' +
 				'      <span id="editor-' + x.id + '" hidden>' +
 				'        <input id="input-' + x.id + '" style="height:22px" class="w3-input" type="text" autofocus/>' +
 				'      </span>' +
