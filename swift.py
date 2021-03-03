@@ -14,6 +14,12 @@ from bottle import route, get, put, post, delete
 # web page template processor
 from bottle import template
 
+# database library & support
+import dataset
+from random import seed, randint
+import time
+import passwords  # file for hashing the passwords
+
 VERSION=0.1
 
 # development server
@@ -25,21 +31,164 @@ else:
     from bottle import run
 
 # ---------------------------
+# user management
+# ---------------------------
+user_db = dataset.connect('sqlite:///user.db')
+seed()
+
+# ---------------------------
+# session management
+# ---------------------------
+session_db = dataset.connect('sqlite:///session.db')
+
+# ---------------------------
 # web application routes
 # ---------------------------
 
 @route('/')
 @route('/tasks')
 def tasks():
+    session_id = request.cookies.get('session_id', None)
+    print("session_id =", session_id)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)  # not ideal; want session to be encrypted like password
+    
+    # try to load session information
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) == 0:  # need to make a session
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": "Guest"
+        }
+        session_table.insert(session)  # put session into database
+    else:
+        session = sessions[0]
+
+    print("Logged in as", session["username"])
+    if "username" not in session:
+        return template("login_failure.tpl", user = "not logged in", password = "n/a")
+    if session["username"] == None:
+        return template("login_failure.tpl", user = "none logged in", password = "n/a")
+
+    # persist the session
+    session_table.update(row = session, keys = ['session_id'])
+
+    assert session_id
+    assert int(session_id)
+    #save_session(response, session)
+    response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
     return template("tasks.tpl")
 
-@route('/login')
-def login():
-    return template("login.tpl")
 
-@route('/register')
-def login():
-    return template("register.tpl")
+@route('/session')
+def session():
+    session_id = request.cookies.get('session_id', None)
+    print("sesson_id in request =", session_id)
+    if session_id:
+        session_id = int(session_id)
+        session_table = session_db.create_table('session')
+        sessions = list(session_table.find(session_id = session_id))
+        if len(list(sessions)) > 0:
+            session = sessions[0]
+        else:
+            session = {}
+    else:
+        session = {}
+
+    return template("session.tpl", session_str = session)
+
+
+@route('/register/<user>/<password>')
+def register(user, password):
+    print("registering", user, password)
+    session_id = request.cookies.get('session_id', None)
+    print("sesson_id in request =", session_id)
+    session_table = session_db.create_table('session')
+
+    # Checks if session exists. If not, create one.
+    if session_id:
+        session_id = int(session_id)
+        sessions = list(session_table.find(session_id = session_id))
+        if len(list(sessions)) > 0:
+            session = sessions[0]
+        else:
+            session = {}
+    else:
+        session_id = randint(10000000, 20000000)  
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": None
+        }
+
+    #stores username and encoded password in db
+    user_table = user_db.create_table('user')
+    user_profile = {
+        "username": user,
+        "password": passwords.encode_password(password)
+    }
+    user_table.insert(user_profile)
+
+    session["username"] = user
+    session_table.update(row = session, keys = 'session_id')
+
+    response.set_cookie('session_id', str(session_id))
+    return template("register.tpl", user = user, password = password)
+
+
+@route("/login/<user>/<password>")
+def login(user, password):
+    username = user
+    print(username)
+    user_table = user_db.create_table('user')
+    users = list(user_table.find(username = user))
+
+    if len(list(users)) > 0:
+        user_profile = list(users)[0]
+        print(user_profile)
+        if(not passwords.verify_password(password, user_profile["password"])):
+            return template("login_failure.tpl",user=user, password="****")
+    else:
+        return template("login_failure.tpl",user=user, password="****")
+
+    session_id = request.cookies.get('session_id', None)
+    print("session_id in request = ", [session_id])
+    if session_id:
+        print("getting session from cookie")
+        session_id = int(session_id)
+    else:
+        print("getting new session from randint")
+        session_id = randint(10000000, 20000000)
+    print("Login", session_id)
+
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+
+    # update the session
+    session['username'] = username
+    print(session)
+
+    # persist the session
+    session_table.update(row = session, keys = 'session_id')
+    print("persisting cookie as ", session_id)
+
+    response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
+    return template("login.tpl", user = user, password = password)
+
 
 # ---------------------------
 # task REST api
