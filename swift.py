@@ -9,7 +9,7 @@ import taskManager
 from bottle import request, response
 
 # HTML request types
-from bottle import route, get, put, post, delete
+from bottle import route, get, put, post, delete, redirect
 
 # web page template processor
 from bottle import template
@@ -102,8 +102,14 @@ def session():
     return template("session.tpl", session_str = session)
 
 
-@route('/register/<user>/<password>')
-def register(user, password):
+@route('/register')
+def register():
+    return template('register.tpl')
+
+@route('/register', method='POST')
+def register_info():
+    user = request.forms.get('un')
+    password = request.forms.get('pw')
     print("registering", user, password)
     session_id = request.cookies.get('session_id', None)
     print("sesson_id in request =", session_id)
@@ -137,23 +143,27 @@ def register(user, password):
     session_table.update(row = session, keys = 'session_id')
 
     response.set_cookie('session_id', str(session_id))
-    return template("register.tpl", user = user, password = password)
+    return redirect('/tasks')
 
+@route("/login")
+def login():
+    return template("login.tpl")
 
-@route("/login/<user>/<password>")
-def login(user, password):
-    username = user
+@route("/login", method='POST')
+def login_info():
+    username = request.forms.get('un')  # get username and password from login.tpl
+    password = request.forms.get('pw')
     print(username)
     user_table = user_db.create_table('user')
-    users = list(user_table.find(username = user))
+    users = list(user_table.find(username = username))
 
     if len(list(users)) > 0:
         user_profile = list(users)[0]
         print(user_profile)
         if(not passwords.verify_password(password, user_profile["password"])):
-            return template("login_failure.tpl",user=user, password="****")
+            return template("login_failure.tpl",user=username, password="****")
     else:
-        return template("login_failure.tpl",user=user, password="****")
+        return template("login_failure.tpl",user=username, password="****")
 
     session_id = request.cookies.get('session_id', None)
     print("session_id in request = ", [session_id])
@@ -187,7 +197,7 @@ def login(user, password):
     print("persisting cookie as ", session_id)
 
     response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
-    return template("login.tpl", user = user, password = password)
+    return redirect('/tasks')
 
 
 # ---------------------------
