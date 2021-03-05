@@ -18,7 +18,7 @@ from bottle import template
 import dataset
 from random import seed, randint
 import time
-import passwords  # file for hashing the passwords
+import passwords  # file for encrypting the passwords
 
 VERSION=0.1
 
@@ -53,7 +53,7 @@ def tasks():
     if session_id:
         session_id = int(session_id)
     else:
-        session_id = randint(10000000, 20000000)  # not ideal; want session to be encrypted like password
+        session_id = randint(10000000, 20000000)  # not ideal; want session id to massive
     
     # try to load session information
     session_table = session_db.create_table('session')
@@ -74,8 +74,9 @@ def tasks():
     if session["username"] == None:
         return template("login_failure.tpl", user = "none logged in", password = "n/a")
 
-    # persist the session
-    session_table.update(row = session, keys = ['session_id'])
+    # persist the session only if a user is logged in
+    if "username" != "Guest":
+        session_table.update(row = session, keys = ['session_id'])
 
     assert session_id
     assert int(session_id)
@@ -128,10 +129,10 @@ def register_info():
         session = {
             "session_id":session_id,
             "started_at":time.time(),
-            "username": None
+            "username": user
         }
 
-    #stores username and encoded password in db
+    #stores username and encrypted password in db
     user_table = user_db.create_table('user')
     user_profile = {
         "username": user,
@@ -143,7 +144,7 @@ def register_info():
     session_table.update(row = session, keys = 'session_id')
 
     response.set_cookie('session_id', str(session_id))
-    return redirect('/tasks')
+    return redirect('/login')
 
 @route("/login")
 def login():
@@ -159,21 +160,20 @@ def login_info():
 
     if len(list(users)) > 0:
         user_profile = list(users)[0]
-        print(user_profile)
+        print("user_profile:", user_profile)
         if(not passwords.verify_password(password, user_profile["password"])):
             return template("login_failure.tpl",user=username, password="****")
     else:
         return template("login_failure.tpl",user=username, password="****")
 
     session_id = request.cookies.get('session_id', None)
-    print("session_id in request = ", [session_id])
+    print("session_id in request = ", session_id)
     if session_id:
-        print("getting session from cookie")
         session_id = int(session_id)
     else:
         print("getting new session from randint")
         session_id = randint(10000000, 20000000)
-    print("Login", session_id)
+    print("Login", username, session_id)
 
     #try to load session info
     session_table = session_db.create_table('session')
@@ -190,13 +190,20 @@ def login_info():
 
     # update the session
     session['username'] = username
-    print(session)
+    print("update the session", session)
 
     # persist the session
     session_table.update(row = session, keys = 'session_id')
-    print("persisting cookie as ", session_id)
+    print("persisting cookie as", username, session_id)
 
     response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
+    return redirect('/tasks')
+
+
+@route("/logout")
+def logout():
+    print("logging out...")
+    response.delete_cookie('session_id')
     return redirect('/tasks')
 
 
