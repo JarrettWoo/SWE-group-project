@@ -74,9 +74,8 @@ def tasks():
     if session["username"] == None:
         return template("login_failure.tpl", user = "none logged in", password = "n/a")
 
-    # persist the session only if a user is logged in
-    if "username" != "Guest":
-        session_table.update(row = session, keys = ['session_id'])
+    # persist the session
+    session_table.update(row = session, keys = ['session_id'])
 
     assert session_id
     assert int(session_id)
@@ -145,6 +144,7 @@ def register_info():
 
     response.set_cookie('session_id', str(session_id))
     return redirect('/login')
+
 
 @route("/login")
 def login():
