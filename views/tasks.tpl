@@ -5,6 +5,7 @@
 	.save_edit,
 	.undo_edit,
 	.move_task,
+	.color_task,
 	.description,
 	.edit_task,
 	.delete_task {
@@ -95,6 +96,7 @@
 		}
 		id = event.target.id.replace("input-", "");
 		$("#filler-" + id).prop('hidden', true);
+		$("#color_task-"+id).prop('hidden',false);
 		$("#save_edit-" + id).prop('hidden', false);
 		$("#undo_edit-" + id).prop('hidden', false);
 	}
@@ -139,6 +141,7 @@
 		$("#delete_task-" + id).prop('hidden', true);
 		// show the editor
 		$("#editor-" + id).prop('hidden', false);
+		$("#color_task-"+id).prop('hidden',false);
 		$("#save_edit-" + id).prop('hidden', false);
 		$("#undo_edit-" + id).prop('hidden', false);
 		// set the editing flag
@@ -233,6 +236,7 @@
 				'      </span>' +
 				'  </td>' +
 				'  <td>' +
+				'    <span id="color_task-'+x.id+'" class="color_task '+x.list+' material-icons"><div class="dropdown"><div id="dropdown" class="dropdown-content"><select id="selColor"><option value="#FFFF00">YELLOW</option><option value = "#00FF00">GREEN</option><option value = "#0000FF">BLUE</option></select><input type = "button" value="LABEL" onclick="color_task()"/></div></div></span>' +
 				'    <span id="edit_task-' + x.id + '" class="edit_task ' + x.list + ' material-icons">edit</span>' +
 				'    <span id="delete_task-' + x.id + '" class="delete_task material-icons">delete</span>' +
 				'    <span id="save_edit-' + x.id + '" hidden class="save_edit material-icons">done</span>' +
@@ -259,6 +263,7 @@
 			$(".move_task").click(move_task);
 			$(".description").click(complete_task)
 			$(".edit_task").click(edit_task);
+			$(".color_task").click(color_task);
 			$(".save_edit").click(save_edit);
 			$(".undo_edit").click(undo_edit);
 			$(".delete_task").click(delete_task);
@@ -266,6 +271,12 @@
 			// $("input").keypress(input_keypress);
 		});
 	}
+
+	function color_task(){
+  	var selColor = document.getElementById("selColor");
+  	var color = selColor.value;
+  	document.body.style.backgroundColor = color;                  // the color change of the entire body bug is here
+  	} 
 
 	$(document).ready(function () {
 		get_current_tasks()
