@@ -1,5 +1,5 @@
 % include("header.tpl")
-% include("banner.tpl")
+% include("banner_jp.tpl")
 
 <style>
   .save_edit, .undo_edit, .move_task, .description, .edit_task, .delete_task {
@@ -12,7 +12,7 @@
 <div class="w3-row">
   <div class="w3-col s6 w3-container w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-border-white">
     <div class="w3-row w3-xxlarge w3-bottombar w3-border-black w3-margin-bottom">
-      <h1><i>Today</i></h1>
+      <h1><i>今日</i></h1>
     </div>
     <table id="task-list-today" class="w3-table">
     </table>
@@ -20,7 +20,7 @@
   </div>
   <div class="w3-col s6 w3-container w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-border-white">
     <div class="w3-row w3-xxlarge w3-bottombar w3-border-black w3-margin-bottom">
-      <h1><i>Tomorrow</i></h1>
+      <h1><i>明日</i></h1>
     </div>
     <table  id="task-list-tomorrow" class="w3-table">
     </table>
@@ -181,7 +181,7 @@ function display_task(x) {
         '  <td style="width:36px"></td>' +  
         '  <td><span id="editor-'+x.id+'">' + 
         '        <input id="input-'+x.id+'" style="height:22px" class="w3-input" '+ 
-        '          type="text" autofocus placeholder="add an item..."/>'+
+        '          type="text" autofocus placeholder="アイテムを追加"..."/>'+
         '      </span>' + 
         '  </td>' +
         '  <td style="width:72px">' +

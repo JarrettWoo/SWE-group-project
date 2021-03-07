@@ -81,7 +81,7 @@ def tasks():
     assert int(session_id)
     #save_session(response, session)
     response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
-    return template("tasks.tpl")
+    return template("tasks_jp.tpl")
 
 
 @route('/session')
