@@ -79,6 +79,7 @@ def tasks():
 
     assert session_id
     assert int(session_id)
+
     #save_session(response, session)
     response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
     return template("tasks.tpl")
@@ -86,6 +87,7 @@ def tasks():
 
 @route('/session')
 def session():
+    # Displays session info
     session_id = request.cookies.get('session_id', None)
     print("sesson_id in request =", session_id)
     if session_id:
@@ -108,9 +110,17 @@ def register():
 
 @route('/register', method='POST')
 def register_info():
-    user = request.forms.get('un')
+    # Gets user info from register.tpl
+    username = request.forms.get('un')
     password = request.forms.get('pw')
-    print("registering", user, password)
+    passwordConfirm = request.forms.get('pwConfirm')
+
+    # Makes sure passwords match
+    if password != passwordConfirm:
+        print("Passwords do not match!")
+        return redirect('/register')
+    
+    print("registering", username, password)
     session_id = request.cookies.get('session_id', None)
     print("sesson_id in request =", session_id)
     session_table = session_db.create_table('session')
@@ -128,21 +138,27 @@ def register_info():
         session = {
             "session_id":session_id,
             "started_at":time.time(),
-            "username": user
+            "username": username
         }
 
     #stores username and encrypted password in db
     user_table = user_db.create_table('user')
+    # Checks if username already exists
+    for users in user_table:
+        if users['username'] == username:
+            print("Name already in use!")
+            return redirect('/register')
+
+    # Creates user profile and updates the cookie
     user_profile = {
-        "username": user,
+        "username": username,
         "password": passwords.encode_password(password)
     }
     user_table.insert(user_profile)
-
-    session["username"] = user
-    session_table.update(row = session, keys = 'session_id')
-
-    response.set_cookie('session_id', str(session_id))
+    # Logs user in immediately after register | Not using
+    #session["username"] = username
+    #session_table.update(row = session, keys = 'session_id')
+    #response.set_cookie('session_id', str(session_id))
     return redirect('/login')
 
 
