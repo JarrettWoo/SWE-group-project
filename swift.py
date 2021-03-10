@@ -147,6 +147,13 @@ def delete_task():
 	response.headers['Content-Type'] = 'application/json'
 	return json.dumps({'success': True})
 
+@put('/api/color_task')
+def color_task():
+	data = request.json
+	task_id = data['task_id']
+	color = data['task_color']
+	print(task_id, color)
+
 if PYTHONANYWHERE:
 	application = default_app()
 else:

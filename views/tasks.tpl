@@ -236,7 +236,14 @@
 				'      </span>' +
 				'  </td>' +
 				'  <td>' +
-				'    <span id="color_task-'+x.id+'" class="color_task '+x.list+' material-icons"><div class="dropdown"><div id="dropdown" class="dropdown-content"><select id="selColor"><option value="#FFFF00">YELLOW</option><option value = "#00FF00">GREEN</option><option value = "#0000FF">BLUE</option></select><input type = "button" value="LABEL" onclick="color_task()"/></div></div></span>' +
+				'	 <span class="dropdown">' +
+				'		<select id="selColor-'+x.id+'">' +
+				'			<option value="#FFFF00">Yellow</option>' +
+				'			<option value="#00FF00">Green</option>' +
+				'			<option value="#0000FF">Blue</option>' +
+				'		</select>' +
+				'		<input class="w3-button small-button" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
+				'	 </span>' +
 				'    <span id="edit_task-' + x.id + '" class="edit_task ' + x.list + ' material-icons">edit</span>' +
 				'    <span id="delete_task-' + x.id + '" class="delete_task material-icons">delete</span>' +
 				'    <span id="save_edit-' + x.id + '" hidden class="save_edit material-icons">done</span>' +
@@ -272,10 +279,24 @@
 		});
 	}
 
-	function color_task(){
-  	var selColor = document.getElementById("selColor");
-  	var color = selColor.value;
-  	document.body.style.backgroundColor = color;                  // the color change of the entire body bug is here
+	function color_task(id){
+		const selColor = document.getElementById("selColor-" + id);
+		const color = selColor.value;
+		
+		const data = {
+			task_id: id,
+			task_color: color
+		};
+
+		$.ajax({
+			url: "api/color_task", type: "PUT",
+			data: JSON.stringify(data),
+			contentType: "application/json; charset=utf-8",
+			success: function() {
+				console.log("colored task successfully");
+				get_current_tasks();
+			}
+		});
   	} 
 
 	$(document).ready(function () {
