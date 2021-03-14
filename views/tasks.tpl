@@ -1,5 +1,6 @@
 % include("header.tpl")
 % include("banner.tpl")
+% include("Calender.tpl")
 
 <style>
   .save_edit, .undo_edit, .move_task, .description, .edit_task, .delete_task {
