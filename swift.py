@@ -147,12 +147,18 @@ def delete_task():
 	response.headers['Content-Type'] = 'application/json'
 	return json.dumps({'success': True})
 
+import dataset
+
 @put('/api/color_task')
 def color_task():
+	taskbook_db = dataset.connect('sqlite:///taskbook.db')  
 	data = request.json
 	task_id = data['task_id']
-	color = data['task_color']
-	print(task_id, color)
+	task_color = data['task_color']
+
+	keywords = {"colorKey": task_color, "idKey": task_id}
+	query = "UPDATE task SET color= :colorKey WHERE id = :idKey"
+	taskbook_db.query(query, keywords)
 
 if PYTHONANYWHERE:
 	application = default_app()

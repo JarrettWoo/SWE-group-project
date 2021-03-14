@@ -240,7 +240,7 @@
 				'		<select id="selColor-'+x.id+'">' +
 				'			<option value="#FFFF00">Yellow</option>' +
 				'			<option value="#00FF00">Green</option>' +
-				'			<option value="#0000FF">Blue</option>' +
+				'			<option value="lightblue">Blue</option>' +
 				'		</select>' +
 				'		<input class="w3-button small-button" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
 				'	 </span>' +
