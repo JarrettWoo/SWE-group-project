@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
+
 <style>
 * {box-sizing: border-box;}
 ul {list-style-type: none;}
@@ -84,7 +82,6 @@ body {font-family: Verdana, sans-serif;}
   .weekdays li, .days li {width: 12.2%;}
 }
 </style>
-</head>
 <body>
 
 <div class="month">      
@@ -143,4 +140,3 @@ body {font-family: Verdana, sans-serif;}
 </ul>
 
 </body>
-</html>

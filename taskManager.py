@@ -64,8 +64,9 @@ def get_tasks(date):
             if task['endDate'] == '':
 
                 # If a task has a repeatFreq of 0, this if statement avoids a divide by zero error
-                if task['repeatFreq'] == 0 and startDay == viewDay:
-                    tasks.append(task)
+                if task['repeatFreq'] == 0:
+                    if startDay == viewDay:
+                        tasks.append(task)
                 else:
                     # A task is passed into the list if the number of days between the current date
                     # and the start date is a multiple of the frequency of the task
@@ -81,8 +82,9 @@ def get_tasks(date):
                 if viewDay <= endDay:
 
                     # Same logic as described above
-                    if task['repeatFreq'] == 0 and startDay == viewDay:
-                        tasks.append(task)
+                    if task['repeatFreq'] == 0:
+                        if startDay == viewDay:
+                            tasks.append(task)
                     else:
                         numDays = int((viewDay - startDay).days)
                         if numDays % task['repeatFreq'] == 0:
