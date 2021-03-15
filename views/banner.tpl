@@ -3,6 +3,6 @@
 	<span class="w3-display-topright">
 		<a class="w3-button w3-round w3-teal small-margin small-button" href="/register">Sign up</a>
 		<a class="w3-button w3-round w3-teal small-margin small-button" href="/login">Log In</a>
-		<a class="w3-button w3-round w3-teal small-margin small-button">Log Out</a>
+		<a class="w3-button w3-round w3-teal small-margin small-button" href="/logout">Log Out</a>
 	</span>
 </div>
