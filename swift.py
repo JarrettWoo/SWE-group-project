@@ -20,6 +20,7 @@ import dataset
 from random import seed, randint
 import time
 import passwords  # file for encrypting the passwords
+import taskManager
 
 VERSION=0.1
 
@@ -68,7 +69,7 @@ def tasks():
         session = {
             "session_id":session_id,
             "started_at":time.time(),
-            "username": "Guest"
+            "username": None
         }
         session_table.insert(session)  # put session into database
     else:
@@ -78,7 +79,7 @@ def tasks():
     if "username" not in session:
         return template("login_failure.tpl", user = "not logged in", password = "n/a")
     if session["username"] == None:
-        return template("login_failure.tpl", user = "none logged in", password = "n/a")
+        return redirect('/login')
 
     # persist the session
     session_table.update(row = session, keys = ['session_id'])
@@ -243,14 +244,17 @@ taskbook_db = dataset.connect('sqlite:///taskbook.db')
 def get_version():
 	return { "version":VERSION }
 
+
 @get('/api/tasks')
 def get_tasks():
-	'return a list of tasks sorted by submit/modify time'
-	response.headers['Content-Type'] = 'application/json'
-	response.headers['Cache-Control'] = 'no-cache'
-	task_table = taskbook_db.get_table('task')
-	tasks = [dict(x) for x in task_table.find(order_by='time')]
-	return { "tasks": tasks }
+    'return a list of tasks sorted by submit/modify time'
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Cache-Control'] = 'no-cache'
+    # task_table = taskbook_db.get_table('task')
+    # tasks = [dict(x) for x in task_table.find()]
+    # return { "tasks": tasks }
+
+    return taskManager.get_tasks(taskManager.getdate_today())
 
 @post('/api/tasks')
 def create_task():
@@ -266,13 +270,7 @@ def create_task():
 		response.status="400 Bad Request:"+str(e)
 		return
 	try:
-		task_table = taskbook_db.get_table('task')
-		task_table.insert({
-			"time": time.time(),
-			"description":data['description'].strip(),
-			"list":data['list'],
-			"completed":False
-		})
+		taskManager.insert_Tasks(data['description'].strip(), dateList=data['list'])
 	except Exception as e:
 		response.status="409 Bad Request:"+str(e)
 	# return 200 Success

@@ -27,7 +27,7 @@ def getUser():
 
 # A basic revision for the insertion of tasks into the tasks table. Will further revise to include functionality
 # for inserting multiple lines of tasks.
-def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, startDt = getdate_today(), endDt = ''):
+def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, startDt = getdate_today(), endDt = '', col = ''):
     # Current Revised Data Structure:
     """
         time: Timestamp for when the task was written, needed for proper execution and organization of tasks
@@ -47,7 +47,7 @@ def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, start
     """
     task_table.insert(
         {"time":time.time(), "user":getUser(), "description":taskDef, "list":dateList, "completed":status,
-         "repeatFreq":repeatNum, "startDate":startDt, "endDate":endDt}
+         "repeatFreq":repeatNum, "startDate":startDt, "endDate":endDt, "color":col}
     )
 
 
