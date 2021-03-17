@@ -90,7 +90,6 @@ renderCalendar();
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Quicksand", sans-serif;
 }
 
 html {
@@ -100,6 +99,7 @@ html {
 .container {
   width: 100%;
   height: 100vh;
+  color: #eee;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -193,18 +193,18 @@ html {
 .today {
   background-color: #167e56;
 }
-
 </style>
+</head>
   <body>
     <div class="container">
       <div class="calendar">
         <div class="month">
-          <i class="fas fa-angle-left prev"></i>
+          <i class="prev"></i>
           <div class="date">
             <h1></h1>
             <p></p>
           </div>
-          <i class="fas fa-angle-right next"></i>
+          <i class="next"></i>
         </div>
         <div class="weekdays">
           <div>Sun</div>
@@ -220,5 +220,3 @@ html {
     </div>
   </body>
 </html>
-
-% include("footer.tpl")
