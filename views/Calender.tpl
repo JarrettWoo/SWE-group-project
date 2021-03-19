@@ -16,11 +16,11 @@
   .container {
     width: 100%;
     height: 100vh;
-    background-color: #12121f;
     color: #eee;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-image: repeating-linear-gradient(white 0px, white 24px, teal 25px)
   }
   
   .calendar {
@@ -231,6 +231,10 @@ renderCalendar();
     />
     <link
       href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+     <link
+      href="./static/customStyles.css"
       rel="stylesheet"
     />
 </head>
