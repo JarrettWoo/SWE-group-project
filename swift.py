@@ -112,11 +112,11 @@ def session():
 
 
 @route('/register')
-def register():
+def register_tpl():
     return template('register.tpl')
 
 @route('/register', method='POST')
-def register_info():
+def register():
     # Gets user info from register.tpl
     username = request.forms.get('un')
     password = request.forms.get('pw')
@@ -170,11 +170,12 @@ def register_info():
 
 
 @route("/login")
-def login():
+def login_tpl():
     return template("login.tpl")
 
+
 @route("/login", method='POST')
-def login_info():
+def login():
     username = request.forms.get('un')  # get username and password from login.tpl
     password = request.forms.get('pw')
     print(username)
@@ -228,6 +229,64 @@ def logout():
     print("logging out...")
     response.delete_cookie('session_id')
     return redirect('/tasks')
+
+
+@route("/remove")
+def remove_tpl():
+    return template("remove.tpl")
+
+
+# Delete user account
+@route("/remove", method='POST')
+def remove():
+    # Gets session information from cookie
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        print("No session in cookie.")
+        return redirect('/tasks')
+
+    # Load session information
+    session_table = session_db.get_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) > 0:
+        session = sessions[0]
+    else:
+        print("No session in table.")
+        return redirect('/tasks')
+
+    # Gets user info from delete.tpl
+    username = request.forms.get('un')
+    password = request.forms.get('pw')
+    passwordConfirm = request.forms.get('pwConfirm')
+
+    # Gets current user from user.db
+    user_table = user_db.get_table('user')
+    users = list(user_table.find(username = session["username"]))
+    if len(list(users)) > 0:
+        user_profile = list(users)[0]
+    else:
+        print("No users")
+        return redirect('/login')
+    
+    # Makes sure a user is logged in | Possibly redundant due to checks when loading session info
+    if session["username"] == None:
+        print("No account logged in. Redirecting to homepage...")
+        return redirect('/tasks')
+
+    if passwordConfirm != password:
+        print("Passwords do not match!")
+        return redirect('/remove')
+
+    if session["username"] != username or not passwords.verify_password(password, user_profile["password"]):
+        print("Unable to verify account.")
+        return redirect('/remove')
+    else:
+        user_db.query("DELETE FROM user WHERE username = '" + session["username"] + "'")
+        taskbook_db.query("DELETE FROM task WHERE user = '" + session["username"] + "'")
+
+    return redirect('/logout')
 
 
 # ---------------------------
