@@ -43,6 +43,9 @@
 			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 		</div>
 	</div>
+	<span class="w3-display-bottomright">
+		<a href="/remove">Delete Account</a>
+	</span>
 </div>
 <input id="current_input" hidden value="" />
 <script>
