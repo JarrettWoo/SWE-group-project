@@ -43,11 +43,12 @@
 			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 		</div>
 	</div>
-	<span class="w3-display-bottomright">
+	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
 		<a href="/remove">Delete Account</a>
 	</span>
 </div>
 <input id="current_input" hidden value="" />
+<script src="static/tests.js"></script>
 <script>
 
 	/* API CALLS */
