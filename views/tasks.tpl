@@ -48,6 +48,7 @@
 	</span>
 </div>
 <input id="current_input" hidden value="" />
+<script src="static/tests.js"></script>
 <script>
 
 	/* API CALLS */
