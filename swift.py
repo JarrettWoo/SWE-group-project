@@ -41,6 +41,10 @@ def login():
 def login():
     return template("register.tpl")
 
+@route('/general')
+def general():
+    return template("generalTasks.tpl")
+
 # ---------------------------
 # task REST api
 # ---------------------------
@@ -141,5 +145,3 @@ if PYTHONANYWHERE:
 else:
    if __name__ == "__main__":
        run(host='localhost', port=8080, debug=True)
-
-
