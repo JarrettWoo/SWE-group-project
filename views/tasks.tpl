@@ -45,7 +45,40 @@
 	</div>
 </div>
 <input id="current_input" hidden value="" />
+<script src="static/tests.js"></script>
 <script>
+
+	$("#darkModeBtn").click(function() {
+		$($("*").get().reverse()).each(function(index) {
+			let color = $(this).css("color");
+			let bgColor = $(this).css("background-color");
+
+			//generate array from rgb string
+			let colorRGB = color.replace(/[^\d,]/g, '').split(',');
+			let bgColorRGB = bgColor.replace(/[^\d,]/g, '').split(',');
+		
+			for (let i = 0; i < colorRGB.length; ++i) {
+				colorRGB[i] = 255 - colorRGB[i];
+				if (bgColorRGB.length == 3) { //if it's not transparent
+					bgColorRGB[i] = 255 - bgColorRGB[i];
+				}
+			}
+			let newColor = "rgb(" + colorRGB[0] + ", " + colorRGB[1] + ", " + colorRGB[2] + ")";
+
+			let newBgColor;
+			if (bgColorRGB.length == 4) {
+				newBgColor = "rgba(" + bgColorRGB[0] + ", " + bgColorRGB[1] + ", " + bgColorRGB[2] + ", " + bgColorRGB[3] + ")";
+			}
+			else {
+				newBgColor = "rgb(" + bgColorRGB[0] + ", " + bgColorRGB[1] + ", " + bgColorRGB[2];
+			}
+				
+			$(this).css("color", newColor);
+			$(this).css("background-color", newBgColor);
+			
+			
+		})
+	})
 
 	/* API CALLS */
 
