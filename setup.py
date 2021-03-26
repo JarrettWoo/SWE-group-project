@@ -4,7 +4,7 @@ import taskManager
 Sys_date = datetime.datetime.now()
 
 if __name__ == "__main__":
-    taskbook_db = dataset.connect('sqlite:///taskbook.db')  
+    taskbook_db = dataset.connect('sqlite:///taskbook.db')
     task_table = taskbook_db.get_table('task')
     task_table.drop()
     task_table = taskbook_db.create_table('task')
@@ -12,3 +12,6 @@ if __name__ == "__main__":
     taskManager.insert_Tasks("Do something fantastic", endDt='2021-2-21')
     taskManager.insert_Tasks("Do something remarkable", endDt='2021-2-20')
     taskManager.insert_Tasks("Do something unusual", status=True, endDt='2021-2-22')
+    taskManager.insert_Tasks("Bottle a monkey", dateList = 'general', startDt = '1970-1-1')
+    taskManager.insert_Tasks("Unbottle a monkey", dateList = 'general', startDt = '1970-1-1')
+    taskManager.insert_Tasks("Rebottle a monkey", dateList = 'general', startDt = '1970-1-1')

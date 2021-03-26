@@ -15,7 +15,7 @@
     <div class="w3-row w3-xxlarge w3-bottombar w3-border-black w3-margin-bottom">
       <h1><i>General Tasks:</i></h1>
     </div>
-    <table id="task-list-today" class="w3-table">
+    <table id="task-list-general" class="w3-table">
     </table>
     <div class="w3-row w3-bottombar w3-border-black w3-margin-bottom w3-margin-top"></div>
   </div>
@@ -26,13 +26,13 @@
 /* API CALLS */
 
 function api_get_tasks(success_function) {
-  $.ajax({url:"api/tasks", type:"GET",
+  $.ajax({url:"api/tasks-gen", type:"GET",
           success:success_function});
 }
 
 function api_create_task(task, success_function) {
   console.log("creating task with:", task)
-  $.ajax({url:"api/tasks", type:"POST",
+  $.ajax({url:"api/tasks-gen", type:"POST",
           data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
@@ -41,7 +41,7 @@ function api_create_task(task, success_function) {
 function api_update_task(task, success_function) {
   console.log("updating task with:", task)
   task.id = parseInt(task.id)
-  $.ajax({url:"api/tasks", type:"PUT",
+  $.ajax({url:"api/tasks-gen", type:"PUT",
           data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
@@ -50,7 +50,7 @@ function api_update_task(task, success_function) {
 function api_delete_task(task, success_function) {
   console.log("deleting task with:", task)
   task.id = parseInt(task.id)
-  $.ajax({url:"api/tasks", type:"DELETE",
+  $.ajax({url:"api/tasks-gen", type:"DELETE",
           data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
@@ -105,7 +105,7 @@ function save_edit(event) {
   console.log("save item", event.target.id)
   id = event.target.id.replace("save_edit-","");
   console.log("desc to save = ",$("#input-" + id).val())
-  if ((id != "today") & (id != "tomorrow")) {
+  if (id != 'general') {
     api_update_task({'id':id, description:$("#input-" + id).val()},
                     function(result) {
                       console.log(result);
@@ -126,7 +126,7 @@ function undo_edit(event) {
   id = event.target.id.replace("undo_edit-","")
   console.log("undo",[id])
   $("#input-" + id).val("");
-  if ((id != "today") & (id != "tomorrow")) {
+  if (id != 'general') {
     // hide the editor
     $("#editor-"+id).prop('hidden', true);
     $("#save_edit-"+id).prop('hidden', true);
