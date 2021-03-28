@@ -56,7 +56,6 @@ def send_static(filename):
 @route('/tasks')
 def tasks():
     session_id = request.cookies.get('session_id', None)
-    print("session_id =", session_id)
     if session_id:
         session_id = int(session_id)
     else:
@@ -75,7 +74,6 @@ def tasks():
     else:
         session = sessions[0]
 
-    print("Logged in as", session["username"])
     if "username" not in session:
         return template("login_failure.tpl", user = "not logged in", password = "n/a")
     if session["username"] == None:
@@ -96,7 +94,6 @@ def tasks():
 def session():
     # Displays session info
     session_id = request.cookies.get('session_id', None)
-    print("sesson_id in request =", session_id)
     if session_id:
         session_id = int(session_id)
         session_table = session_db.create_table('session')
@@ -124,12 +121,9 @@ def register():
 
     # Makes sure passwords match
     if password != passwordConfirm:
-        print("Passwords do not match!")
         return redirect('/register')
     
-    print("registering", username, password)
     session_id = request.cookies.get('session_id', None)
-    print("sesson_id in request =", session_id)
     session_table = session_db.create_table('session')
 
     # Checks if session exists. If not, create one.
@@ -153,7 +147,6 @@ def register():
     # Checks if username already exists
     for users in user_table:
         if users['username'] == username:
-            print("Name already in use!")
             return redirect('/register')
 
     # Creates user profile and updates the cookie
@@ -178,26 +171,21 @@ def login_tpl():
 def login():
     username = request.forms.get('un')  # get username and password from login.tpl
     password = request.forms.get('pw')
-    print(username)
     user_table = user_db.create_table('user')
     users = list(user_table.find(username = username))
 
     if len(list(users)) > 0:
         user_profile = list(users)[0]
-        print("user_profile:", user_profile)
         if(not passwords.verify_password(password, user_profile["password"])):
             return template("login_failure.tpl",user=username, password="****")
     else:
         return template("login_failure.tpl",user=username, password="****")
 
     session_id = request.cookies.get('session_id', None)
-    print("session_id in request = ", session_id)
     if session_id:
         session_id = int(session_id)
     else:
-        print("getting new session from randint")
         session_id = randint(10000000, 20000000)
-    print("Login", username, session_id)
 
     #try to load session info
     session_table = session_db.create_table('session')
@@ -214,11 +202,9 @@ def login():
 
     # update the session
     session['username'] = username
-    print("update the session", session)
 
     # persist the session
     session_table.update(row = session, keys = 'session_id')
-    print("persisting cookie as", username, session_id)
 
     response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
     return redirect('/tasks')
@@ -226,7 +212,6 @@ def login():
 
 @route("/logout")
 def logout():
-    print("logging out...")
     response.delete_cookie('session_id')
     return redirect('/tasks')
 
@@ -244,7 +229,6 @@ def remove():
     if session_id:
         session_id = int(session_id)
     else:
-        print("No session in cookie.")
         return redirect('/tasks')
 
     # Load session information
@@ -253,7 +237,6 @@ def remove():
     if len(sessions) > 0:
         session = sessions[0]
     else:
-        print("No session in table.")
         return redirect('/tasks')
 
     # Gets user info from delete.tpl
@@ -267,20 +250,16 @@ def remove():
     if len(list(users)) > 0:
         user_profile = list(users)[0]
     else:
-        print("No users")
         return redirect('/login')
     
     # Makes sure a user is logged in | Possibly redundant due to checks when loading session info
     if session["username"] == None:
-        print("No account logged in. Redirecting to homepage...")
         return redirect('/tasks')
 
     if passwordConfirm != password:
-        print("Passwords do not match!")
         return redirect('/remove')
 
     if session["username"] != username or not passwords.verify_password(password, user_profile["password"]):
-        print("Unable to verify account.")
         return redirect('/remove')
     else:
         user_db.query("DELETE FROM user WHERE username = '" + session["username"] + "'")
