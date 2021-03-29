@@ -41,6 +41,10 @@ def login():
 def login():
     return template("register.tpl")
 
+@route('/general')
+def general():
+    return template("generalTasks.tpl")
+
 # ---------------------------
 # task REST api
 # ---------------------------
@@ -136,10 +140,84 @@ def delete_task():
     response.headers['Content-Type'] = 'application/json'
     return json.dumps({'success': True})
 
+############## Functions for use with the 'General-Tasks' page ################
+@get('/api/tasks-gen')
+def get_general_tasks():
+    'return a list of tasks with endDt = 1970-1-1'
+    response.headers['Content-Type'] = 'application/json'
+    response.headers['Cache-Control'] = 'no-cache'
+    return taskManager.get_tasks('1970-1-1') #Date that denotes it as general
+
+@post('/api/tasks-gen')
+def create_general_task():
+    'create a new general task in the database'
+    try:
+        data = request.json
+        for key in data.keys():
+            assert key in ["description", "list"], f"Illegal key '{key}'"
+        assert type(data['description']) is str, "Description is not a string."
+        assert len(data['description'].strip()) > 0, "Description is length zero."
+    except Exception as e:
+        response.status = "400 Bad Request:" + str(e)
+        return
+    try:
+        taskManager.insert_Tasks(data['description'].strip(), dateList='general', startDt='1970-1-1')
+    except Exception as e:
+        response.status="409 Bad Request:"+str(e)
+    # return 200 Success
+    response.headers['Content-Type'] = 'application/json'
+    return json.dumps({'status':200, 'success': True})
+
+@put('/api/tasks-gen')
+def update_general_task():
+    'update properties of an existing general task in the database'
+    try:
+        data = request.json
+        for key in data.keys():
+            assert key in ["id","description","completed","list"], f"Illegal key '{key}'"
+        assert type(data['id']) is int, f"id '{id}' is not int"
+        if "description" in request:
+            assert type(data['description']) is str, "Description is not a string."
+            assert len(data['description'].strip()) > 0, "Description is length zero."
+        if "completed" in request:
+            assert type(data['completed']) is bool, "Completed is not a bool."
+    except Exception as e:
+        response.status="400 Bad Request:"+str(e)
+        return
+    if 'list' in data:
+        data['time'] = time.time()
+    try:
+        task_table = taskbook_db.get_table('task')
+        task_table.update(row=data, keys=['id'])
+    except Exception as e:
+        response.status="409 Bad Request:"+str(e)
+        return
+    # return 200 Success
+    response.headers['Content-Type'] = 'application/json'
+    return json.dumps({'status':200, 'success': True})
+
+@delete('/api/tasks-gen')
+def delete_general_task():
+    'delete an existing task in the database'
+    try:
+        data = request.json
+        assert type(data['id']) is int, f"id '{id}' is not int"
+    except Exception as e:
+        response.status="400 Bad Request:"+str(e)
+        return
+    try:
+        task_table = taskbook_db.get_table('task')
+        task_table.delete(id=data['id'])
+    except Exception as e:
+        response.status="409 Bad Request:"+str(e)
+        return
+    # return 200 Success
+    response.headers['Content-Type'] = 'application/json'
+    return json.dumps({'success': True})
+
+
 if PYTHONANYWHERE:
     application = default_app()
 else:
    if __name__ == "__main__":
        run(host='localhost', port=8080, debug=True)
-
-
