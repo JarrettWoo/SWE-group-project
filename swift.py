@@ -55,37 +55,48 @@ taskbook_db = dataset.connect('sqlite:///taskbook.db')
 def get_version():
     return { "version":VERSION }
 
-@get('/api/tasks')
-def get_tasks():
+@get('/api/tasks/<day>')
+def get_tasks(day):
     'return a list of tasks sorted by submit/modify time'
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
-    # task_table = taskbook_db.get_table('task')
-    # tasks = [dict(x) for x in task_table.find()]
-    # return { "tasks": tasks }
 
-    return taskManager.get_tasks(taskManager.getdate_today())
+    days = [taskManager.getdate_today(), day]
+    return taskManager.get_tasks(days)
+
+@get('/api/remember')
+def remember_day():
+    return taskManager.get_view()
+
+@post('/api/study')
+def update_view():
+    data = request.json
+    print(data)
+    taskManager.set_view(data)
 
 @post('/api/tasks')
 def create_task():
     'create a new task in the database'
     try:
         data = request.json
-        for key in data.keys():
-            assert key in ["description", "list"], f"Illegal key '{key}'"
         assert type(data['description']) is str, "Description is not a string."
         assert len(data['description'].strip()) > 0, "Description is length zero."
-        assert data['list'] in ["today", "tomorrow"], "List must be 'today' or 'tomorrow'"
     except Exception as e:
         response.status = "400 Bad Request:" + str(e)
         return
     try:
-        taskManager.insert_Tasks(data['description'].strip(), dateList=data['list'])
+        if data['list'] == 'tomorrow':
+            data['list'] = (taskManager.get_view())['savedDate']
+        else:
+            data['list'] = taskManager.getdate_today()
+
+        taskManager.insert_Tasks(data['description'].strip(), startDt=data['list'])
     except Exception as e:
         response.status="409 Bad Request:"+str(e)
     # return 200 Success
     response.headers['Content-Type'] = 'application/json'
     return json.dumps({'status':200, 'success': True})
+
 
 @put('/api/tasks')
 def update_task():
@@ -93,21 +104,20 @@ def update_task():
     try:
         data = request.json
         for key in data.keys():
-            assert key in ["id","description","completed","list"], f"Illegal key '{key}'"
-        assert type(data['id']) is int, f"id '{id}' is not int"
+            assert key in ["id","description","completed"], f"Illegal key '{key}'"
         if "description" in request:
             assert type(data['description']) is str, "Description is not a string."
             assert len(data['description'].strip()) > 0, "Description is length zero."
         if "completed" in request:
             assert type(data['completed']) is bool, "Completed is not a bool."
-        if "list" in request:
-            assert data['list'] in ["today","tomorrow"], "List must be 'today' or 'tomorrow'"
     except Exception as e:
         response.status="400 Bad Request:"+str(e)
         return
-    if 'list' in data:
-        data['time'] = time.time()
     try:
+        year, month, date, ident = data['id'].split('-')
+
+        data['id'] = int(ident)
+
         task_table = taskbook_db.get_table('task')
         task_table.update(row=data, keys=['id'])
     except Exception as e:
@@ -117,16 +127,30 @@ def update_task():
     response.headers['Content-Type'] = 'application/json'
     return json.dumps({'status':200, 'success': True})
 
+
+@get('/api/tomorrow')
+def get_tomorrow():
+    return taskManager.getdate_tomorrow(taskManager.getdate_today())
+
+
+@get('/api/get_days/<day>')
+def get_days(day):
+    days = {'today': taskManager.getdate_today(), 'tomorrow': day}
+    return days
+
+
 @delete('/api/tasks')
 def delete_task():
     'delete an existing task in the database'
     try:
         data = request.json
-        assert type(data['id']) is int, f"id '{id}' is not int"
     except Exception as e:
         response.status="400 Bad Request:"+str(e)
         return
     try:
+        year, month, date, ident = data['id'].split('-')
+
+        data['id'] = int(ident)
         task_table = taskbook_db.get_table('task')
         task_table.delete(id=data['id'])
     except Exception as e:

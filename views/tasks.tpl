@@ -3,7 +3,7 @@
 % include("Calender.tpl")
 
 <style>
-  .save_edit, .undo_edit, .move_task, .description, .edit_task, .delete_task {
+  .save_edit, .undo_edit, .description, .edit_task, .delete_task {
     cursor: pointer;
   }
   .completed {text-decoration: line-through;}
@@ -33,9 +33,34 @@
 
 /* API CALLS */
 
-function api_get_tasks(success_function) {
-  $.ajax({url:"api/tasks", type:"GET", 
+function api_get_tasks(day, success_function) {
+  var path = 'api/tasks/' + day
+  $.ajax({url:path, type:"GET",
           success:success_function});
+}
+
+function api_get_days(day, success_function) {
+  var path = 'api/get_days/'
+  path += day
+  $.ajax({url:path, type:"GET",
+          success:success_function});
+}
+
+function api_remember_days(success_function) {
+    $.ajax({url:"api/remember", type:"GET",
+            success:success_function});
+}
+
+function api_new_day(date) {
+    console.log('changing the view date to: ', date);
+    $.ajax({url:"api/study", type:"POST",
+            data:JSON.stringify(date),
+            contentType:"application/json; charset=utf-8"});
+}
+
+function api_get_tomorrow(success_function) {
+    $.ajax({url:"api/tomorrow", type:"GET",
+            success:success_function});
 }
 
 function api_create_task(task, success_function) {
@@ -48,7 +73,6 @@ function api_create_task(task, success_function) {
 
 function api_update_task(task, success_function) {
   console.log("updating task with:", task)
-  task.id = parseInt(task.id)
   $.ajax({url:"api/tasks", type:"PUT", 
           data:JSON.stringify(task), 
           contentType:"application/json; charset=utf-8",
@@ -57,7 +81,6 @@ function api_update_task(task, success_function) {
 
 function api_delete_task(task, success_function) {
   console.log("deleting task with:", task)
-  task.id = parseInt(task.id)
   $.ajax({url:"api/tasks", type:"DELETE", 
           data:JSON.stringify(task), 
           contentType:"application/json; charset=utf-8",
@@ -78,18 +101,6 @@ function input_keypress(event) {
 
 /* EVENT HANDLERS */
 
-function move_task(event) {
-  if ($("#current_input").val() != "") { return }
-  console.log("move item", event.target.id )
-  id = event.target.id.replace("move_task-","");
-  target_list = event.target.className.search("today") > 0 ? "tomorrow" : "today";
-  api_update_task({'id':id, 'list':target_list},
-                  function(result) { 
-                    console.log(result);
-                    get_current_tasks();
-                  } );
-}
-
 function complete_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("complete item", event.target.id )
@@ -99,7 +110,9 @@ function complete_task(event) {
   api_update_task({'id':id, 'completed':completed==false}, 
                   function(result) { 
                     console.log(result);
-                    get_current_tasks();
+                    api_remember_days(function(result) {
+                        get_current_tasks(result['savedDate']);
+                    });
                   } );
 }
 
@@ -110,7 +123,6 @@ function edit_task(event) {
   // move the text to the input editor
   $("#input-"+id).val($("#description-"+id).text());
   // hide the text display
-  $("#move_task-"+id).prop('hidden', true);
   $("#description-"+id).prop('hidden', true);
   $("#edit_task-"+id).prop('hidden', true);
   $("#delete_task-"+id).prop('hidden', true);
@@ -130,14 +142,18 @@ function save_edit(event) {
     api_update_task({'id':id, description:$("#input-" + id).val()},
                     function(result) { 
                       console.log(result);
-                      get_current_tasks();
+                      api_remember_days(function(result) {
+                        get_current_tasks(result['savedDate']);
+                    });
                       $("#current_input").val("")
                     } );
   } else {
     api_create_task({description:$("#input-" + id).val(), list:id},
                     function(result) { 
                       console.log(result);
-                      get_current_tasks();
+                      api_remember_days(function(result) {
+                        get_current_tasks(result['savedDate']);
+                    });
                       $("#current_input").val("")
                     } );
   }
@@ -170,12 +186,13 @@ function delete_task(event) {
   api_delete_task({'id':id},
                   function(result) { 
                     console.log(result);
-                    get_current_tasks();
+                    api_remember_days(function(result) {
+                        get_current_tasks(result['savedDate']);
+                    });
                   } );
 }
 
-function display_task(x) {
-  arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
+function display_task(x, converter) {
   completed = x.completed ? " completed" : "";
   if ((x.id == "today") | (x.id == "tomorrow")) {
     t = '<tr id="task-'+x.id+'" class="task">' +
@@ -192,8 +209,16 @@ function display_task(x) {
         '  </td>' +
         '</tr>';
   } else {
-    t = '<tr id="task-'+x.id+'" class="task">' + 
-        '  <td><span id="move_task-'+x.id+'" class="move_task '+x.list+' material-icons">' + arrow + '</span></td>' +
+    console.log(x)
+    console.log(converter)
+
+    if ((x.list == converter['today'])) {
+        x.list = 'today'
+    } else {
+        x.list = 'tomorrow'
+    }
+
+    t = '<tr id="task-'+x.id+'" class="task">' +
         '  <td><span id="description-'+x.id+'" class="description' + completed + '">' + x.description + '</span>' + 
         '      <span id="editor-'+x.id+'" hidden>' + 
         '        <input id="input-'+x.id+'" style="height:22px" class="w3-input" type="text" autofocus/>' +
@@ -211,19 +236,28 @@ function display_task(x) {
   $("#current_input").val("")
 }
 
-function get_current_tasks() {
+function get_current_tasks(day) {
   // remove the old tasks
   $(".task").remove();
+  var dates;
+
+    api_get_days(day, function(result){
+        dates = result
+        console.log('Using these dates for the task')
+        console.log(dates)
+  });
+
   // display the new task editor
-  display_task({id:"today", list:"today"})
-  display_task({id:"tomorrow", list:"tomorrow"})
+  display_task({id:"today", list:"today"}, {})
+  display_task({id:"tomorrow", list:"tomorrow"}, {})
+
   // display the tasks
-  api_get_tasks(function(result){
+  api_get_tasks(day, function(result){
     for (const task of result.tasks) {
-      display_task(task);
+      display_task(task, dates);
     }
-    // wire the response events 
-    $(".move_task").click(move_task);
+
+    // wire the response events
     $(".description").click(complete_task)
     $(".edit_task").click(edit_task);
     $(".save_edit").click(save_edit);
@@ -235,7 +269,9 @@ function get_current_tasks() {
 }
 
 $(document).ready(function() {
-  get_current_tasks()
+  api_get_tomorrow(function(result){
+    get_current_tasks(result);
+  })
 });
 
 </script>
