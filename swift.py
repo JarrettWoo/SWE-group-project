@@ -60,7 +60,8 @@ def tasks():
         session_id = int(session_id)
     else:
         session_id = randint(10000000, 20000000)  # not ideal; want session id to massive
-    
+        response.set_cookie('session_id', str(session_id))
+
     # try to load session information
     session_table = session_db.create_table('session')
     sessions = list(session_table.find(session_id = session_id))
@@ -68,14 +69,15 @@ def tasks():
         session = {
             "session_id":session_id,
             "started_at":time.time(),
-            "username": None
+            "username": None,
+            "language": "english"
         }
         session_table.insert(session)  # put session into database
     else:
         session = sessions[0]
 
     if "username" not in session:
-        return template("login_failure.tpl", user = "not logged in", password = "n/a")
+        return template(session["language"] + "/login_failure.tpl")
     if session["username"] == None:
         return redirect('/login')
 
@@ -87,7 +89,7 @@ def tasks():
 
     #save_session(response, session)
     response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
-    return template("tasks.tpl")
+    return template(session["language"] + "/tasks.tpl")
 
 
 @route('/session')
@@ -110,7 +112,21 @@ def session():
 
 @route('/register')
 def register_tpl():
-    return template('register.tpl')
+    session_id = request.cookies.get('session_id', None)
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) == 0:  # need to make a session
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": None,
+            "language": "english"
+        }
+        session_table.insert(session)  # put session into database
+    else:
+        session = sessions[0]
+    return template(session["language"] + "/register.tpl")
+
 
 @route('/register', method='POST')
 def register():
@@ -139,7 +155,8 @@ def register():
         session = {
             "session_id":session_id,
             "started_at":time.time(),
-            "username": username
+            "username": username,
+            "language": "english"
         }
 
     #stores username and encrypted password in db
@@ -149,9 +166,10 @@ def register():
         if users['username'] == username:
             return redirect('/register')
 
-    # Creates user profile and updates the cookie
+    # Creates user profile and updates the database
     user_profile = {
         "username": username,
+        "language": session["language"],
         "password": passwords.encode_password(password)
     }
     user_table.insert(user_profile)
@@ -164,12 +182,44 @@ def register():
 
 @route("/login")
 def login_tpl():
-    return template("login.tpl")
+    session_id = request.cookies.get('session_id', None)
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) == 0:  # need to make a session
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": None,
+            "language": "english"
+        }
+        session_table.insert(session)  # put session into database
+    else:
+        session = sessions[0]
+    return template(session["language"] + "/login.tpl")
 
 
 @route("/login", method='POST')
 def login():
-    username = request.forms.get('un')  # get username and password from login.tpl
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+    
+    username = request.forms.get('un')  # Get username and password from login page
     password = request.forms.get('pw')
     user_table = user_db.create_table('user')
     users = list(user_table.find(username = username))
@@ -177,16 +227,29 @@ def login():
     if len(list(users)) > 0:
         user_profile = list(users)[0]
         if(not passwords.verify_password(password, user_profile["password"])):
-            return template("login_failure.tpl",user=username, password="****")
+            return template(session["language"] + "/login_failure.tpl")
     else:
-        return template("login_failure.tpl",user=username, password="****")
+        return template(session["language"] + "/login_failure.tpl")
 
+    # update the session
+    session['username'] = username
+    session['language'] = user_profile["language"]
+
+    # persist the session
+    session_table.update(row = session, keys = 'session_id')
+
+    response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
+    return redirect('/tasks')
+
+
+@route("/logout")
+def logout():
     session_id = request.cookies.get('session_id', None)
     if session_id:
         session_id = int(session_id)
     else:
         session_id = randint(10000000, 20000000)
-
+    
     #try to load session info
     session_table = session_db.create_table('session')
     sessions = list(session_table.find(session_id = session_id))
@@ -200,25 +263,34 @@ def login():
     else:
         session = sessions[0]
 
-    # update the session
-    session['username'] = username
+    user_table = user_db.create_table('user')
+    users = list(user_table.find(username = session["username"]))
 
-    # persist the session
-    session_table.update(row = session, keys = 'session_id')
+    if len(list(users)) > 0:    
+        user_profile = list(users)[0]
+        user_profile["language"] = session["language"]
+        user_table.update(row = user_profile, keys = 'username')
 
-    response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
-    return redirect('/tasks')
-
-
-@route("/logout")
-def logout():
     response.delete_cookie('session_id')
     return redirect('/tasks')
 
 
 @route("/remove")
 def remove_tpl():
-    return template("remove.tpl")
+    session_id = request.cookies.get('session_id', None)
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) == 0:  # need to make a session
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": None,
+            "language": "english"
+        }
+        session_table.insert(session)  # put session into database
+    else:
+        session = sessions[0]
+    return template(session["language"] + "/remove.tpl")
 
 
 # Delete user account
@@ -266,6 +338,87 @@ def remove():
         taskbook_db.query("DELETE FROM task WHERE user = '" + session["username"] + "'")
 
     return redirect('/logout')
+
+
+@route("/english")
+def english():
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+    
+    session["language"] = "english"
+    session_table.update(row = session, keys = 'session_id')
+    
+    return redirect("/tasks")
+
+
+@route("/japanese")
+def japanese():
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+
+    session['language'] = "japanese"
+    session_table.update(row = session, keys = 'session_id')
+    
+    return redirect("/tasks")
+
+
+@route("/hindi")
+def hindi():
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+
+    session["language"] = "hindi"
+    session_table.update(row = session, keys = 'session_id')
+    
+    return redirect("/tasks")
 
 
 # ---------------------------
