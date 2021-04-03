@@ -1,7 +1,3 @@
-# password encryption
-# Brian Behnke
-# 2/27/2021
-
 import hashlib
 import os
 import binascii

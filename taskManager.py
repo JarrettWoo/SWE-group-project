@@ -56,7 +56,7 @@ def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, start
 def get_tasks(date):
 
     # Pulls every task out of the database into a working list
-#    tasks_list = [dict(x) for x in task_table.find()]
+    #tasks_list = [dict(x) for x in task_table.find()]
 
     # Pulls tasks associated with 'user' into a working list
     tasks_list = [dict(x) for x in task_table.find(user = getUser())]
@@ -77,7 +77,7 @@ def get_tasks(date):
 
                 # If a task has a repeatFreq of 0, this if statement avoids a divide by zero error
                 if task['repeatFreq'] == 0:
-                    if startDay == viewDay:
+                    if startDay <= viewDay:
                         tasks.append(task)
                 else:
                     # A task is passed into the list if the number of days between the current date
@@ -95,7 +95,7 @@ def get_tasks(date):
 
                     # Same logic as described above
                     if task['repeatFreq'] == 0: 
-                        if startDay == viewDay:
+                        if startDay <= viewDay:
                             tasks.append(task)
                     else:
                         numDays = int((viewDay - startDay).days)

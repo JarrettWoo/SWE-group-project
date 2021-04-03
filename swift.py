@@ -56,12 +56,12 @@ def send_static(filename):
 @route('/tasks')
 def tasks():
     session_id = request.cookies.get('session_id', None)
-    print("session_id =", session_id)
     if session_id:
         session_id = int(session_id)
     else:
         session_id = randint(10000000, 20000000)  # not ideal; want session id to massive
-    
+        response.set_cookie('session_id', str(session_id))
+
     # try to load session information
     session_table = session_db.create_table('session')
     sessions = list(session_table.find(session_id = session_id))
@@ -69,15 +69,15 @@ def tasks():
         session = {
             "session_id":session_id,
             "started_at":time.time(),
-            "username": None
+            "username": None,
+            "language": "english"
         }
         session_table.insert(session)  # put session into database
     else:
         session = sessions[0]
 
-    print("Logged in as", session["username"])
     if "username" not in session:
-        return template("login_failure.tpl", user = "not logged in", password = "n/a")
+        return template(session["language"] + "/login_failure.tpl")
     if session["username"] == None:
         return redirect('/login')
 
@@ -89,14 +89,13 @@ def tasks():
 
     #save_session(response, session)
     response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
-    return template("tasks.tpl")
+    return template(session["language"] + "/tasks.tpl")
 
 
 @route('/session')
 def session():
     # Displays session info
     session_id = request.cookies.get('session_id', None)
-    print("sesson_id in request =", session_id)
     if session_id:
         session_id = int(session_id)
         session_table = session_db.create_table('session')
@@ -112,11 +111,25 @@ def session():
 
 
 @route('/register')
-def register():
-    return template('register.tpl')
+def register_tpl():
+    session_id = request.cookies.get('session_id', None)
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) == 0:  # need to make a session
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": None,
+            "language": "english"
+        }
+        session_table.insert(session)  # put session into database
+    else:
+        session = sessions[0]
+    return template(session["language"] + "/register.tpl")
+
 
 @route('/register', method='POST')
-def register_info():
+def register():
     # Gets user info from register.tpl
     username = request.forms.get('un')
     password = request.forms.get('pw')
@@ -124,12 +137,9 @@ def register_info():
 
     # Makes sure passwords match
     if password != passwordConfirm:
-        print("Passwords do not match!")
         return redirect('/register')
     
-    print("registering", username, password)
     session_id = request.cookies.get('session_id', None)
-    print("sesson_id in request =", session_id)
     session_table = session_db.create_table('session')
 
     # Checks if session exists. If not, create one.
@@ -145,7 +155,8 @@ def register_info():
         session = {
             "session_id":session_id,
             "started_at":time.time(),
-            "username": username
+            "username": username,
+            "language": "english"
         }
 
     #stores username and encrypted password in db
@@ -153,12 +164,12 @@ def register_info():
     # Checks if username already exists
     for users in user_table:
         if users['username'] == username:
-            print("Name already in use!")
             return redirect('/register')
 
-    # Creates user profile and updates the cookie
+    # Creates user profile and updates the database
     user_profile = {
         "username": username,
+        "language": session["language"],
         "password": passwords.encode_password(password)
     }
     user_table.insert(user_profile)
@@ -170,34 +181,75 @@ def register_info():
 
 
 @route("/login")
-def login():
-    return template("login.tpl")
+def login_tpl():
+    session_id = request.cookies.get('session_id', None)
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) == 0:  # need to make a session
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": None,
+            "language": "english"
+        }
+        session_table.insert(session)  # put session into database
+    else:
+        session = sessions[0]
+    return template(session["language"] + "/login.tpl")
+
 
 @route("/login", method='POST')
-def login_info():
-    username = request.forms.get('un')  # get username and password from login.tpl
+def login():
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+    
+    username = request.forms.get('un')  # Get username and password from login page
     password = request.forms.get('pw')
-    print(username)
     user_table = user_db.create_table('user')
     users = list(user_table.find(username = username))
 
     if len(list(users)) > 0:
         user_profile = list(users)[0]
-        print("user_profile:", user_profile)
         if(not passwords.verify_password(password, user_profile["password"])):
-            return template("login_failure.tpl",user=username, password="****")
+            return template(session["language"] + "/login_failure.tpl")
     else:
-        return template("login_failure.tpl",user=username, password="****")
+        return template(session["language"] + "/login_failure.tpl")
 
+    # update the session
+    session['username'] = username
+    session['language'] = user_profile["language"]
+
+    # persist the session
+    session_table.update(row = session, keys = 'session_id')
+
+    response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
+    return redirect('/tasks')
+
+
+@route("/logout")
+def logout():
     session_id = request.cookies.get('session_id', None)
-    print("session_id in request = ", session_id)
     if session_id:
         session_id = int(session_id)
     else:
-        print("getting new session from randint")
         session_id = randint(10000000, 20000000)
-    print("Login", username, session_id)
-
+    
     #try to load session info
     session_table = session_db.create_table('session')
     sessions = list(session_table.find(session_id = session_id))
@@ -211,23 +263,162 @@ def login_info():
     else:
         session = sessions[0]
 
-    # update the session
-    session['username'] = username
-    print("update the session", session)
+    user_table = user_db.create_table('user')
+    users = list(user_table.find(username = session["username"]))
 
-    # persist the session
-    session_table.update(row = session, keys = 'session_id')
-    print("persisting cookie as", username, session_id)
+    if len(list(users)) > 0:    
+        user_profile = list(users)[0]
+        user_profile["language"] = session["language"]
+        user_table.update(row = user_profile, keys = 'username')
 
-    response.set_cookie('session_id', str(session_id))  # <host/url> <name> <value>
-    return redirect('/tasks')
-
-
-@route("/logout")
-def logout():
-    print("logging out...")
     response.delete_cookie('session_id')
     return redirect('/tasks')
+
+
+@route("/remove")
+def remove_tpl():
+    session_id = request.cookies.get('session_id', None)
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) == 0:  # need to make a session
+        session = {
+            "session_id":session_id,
+            "started_at":time.time(),
+            "username": None,
+            "language": "english"
+        }
+        session_table.insert(session)  # put session into database
+    else:
+        session = sessions[0]
+    return template(session["language"] + "/remove.tpl")
+
+
+# Delete user account
+@route("/remove", method='POST')
+def remove():
+    # Gets session information from cookie
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        return redirect('/tasks')
+
+    # Load session information
+    session_table = session_db.get_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    if len(sessions) > 0:
+        session = sessions[0]
+    else:
+        return redirect('/tasks')
+
+    # Gets user info from delete.tpl
+    username = request.forms.get('un')
+    password = request.forms.get('pw')
+    passwordConfirm = request.forms.get('pwConfirm')
+
+    # Gets current user from user.db
+    user_table = user_db.get_table('user')
+    users = list(user_table.find(username = session["username"]))
+    if len(list(users)) > 0:
+        user_profile = list(users)[0]
+    else:
+        return redirect('/login')
+    
+    # Makes sure a user is logged in | Possibly redundant due to checks when loading session info
+    if session["username"] == None:
+        return redirect('/tasks')
+
+    if passwordConfirm != password:
+        return redirect('/remove')
+
+    if session["username"] != username or not passwords.verify_password(password, user_profile["password"]):
+        return redirect('/remove')
+    else:
+        user_db.query("DELETE FROM user WHERE username = '" + session["username"] + "'")
+        taskbook_db.query("DELETE FROM task WHERE user = '" + session["username"] + "'")
+
+    return redirect('/logout')
+
+
+@route("/english")
+def english():
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+    
+    session["language"] = "english"
+    session_table.update(row = session, keys = 'session_id')
+    
+    return redirect("/tasks")
+
+
+@route("/japanese")
+def japanese():
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+
+    session['language'] = "japanese"
+    session_table.update(row = session, keys = 'session_id')
+    
+    return redirect("/tasks")
+
+
+@route("/hindi")
+def hindi():
+    session_id = request.cookies.get('session_id', None)
+    if session_id:
+        session_id = int(session_id)
+    else:
+        session_id = randint(10000000, 20000000)
+    
+    #try to load session info
+    session_table = session_db.create_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+
+    if len(sessions) == 0:
+        session = {
+            "session_id": session_id,
+            "started_at": time.time()
+        }
+        session_table.insert(session)  # put session into db
+    else:
+        session = sessions[0]
+
+    session["language"] = "hindi"
+    session_table.update(row = session, keys = 'session_id')
+    
+    return redirect("/tasks")
 
 
 # ---------------------------
