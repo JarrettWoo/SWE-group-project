@@ -2,6 +2,7 @@
 # Import Functions
 import dataset
 import datetime
+from datetime import timedelta
 import time
 from bottle import request
 
@@ -9,6 +10,7 @@ from bottle import request
 taskbook_db = dataset.connect('sqlite:///taskbook.db')
 session_db = dataset.connect('sqlite:///session.db')
 task_table = taskbook_db.get_table('task')
+date_table = taskbook_db.create_table('view')
 
 
 # Returns a formatted date string in the form Year-Month-Day
@@ -16,18 +18,31 @@ def getdate_today():
     Sys_date = datetime.datetime.now()
     return Sys_date.strftime("%Y-%m-%d")
 
-# Gets session information from the cookie. Used to save tasks with users.
-def getUser():
-    session_id = request.cookies.get('session_id', None)
-    session_table = session_db.get_table('session')
-    sessions = list(session_table.find(session_id = session_id))
-    session = sessions[0]
-    return session['username']
+def getdate_tomorrow(today):
+    year, month, day = today.split('-')
+    date = datetime.datetime(int(year), int(month), int(day))
+    date = date + timedelta(days=1)
+    return date.strftime("%Y-%m-%d")
+
+
+# Getter and setter for the remembered day in view table
+def get_view():
+    date_list = [dict(x) for x in date_table.find()]
+    return date_list[0]
+
+
+def set_view(date):
+    print("I have set the new day!")
+    date_list = [dict(x) for x in date_table.find()][0]
+    date_list['savedDate'] = date
+    date_table.update(row=date_list, keys=['id'])
+
 
 
 # A basic revision for the insertion of tasks into the tasks table. Will further revise to include functionality
 # for inserting multiple lines of tasks.
-def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, startDt = getdate_today(), endDt = '', col = ''):
+def insert_Tasks(taskDef, status=False, dateList = '', repeatNum = 0, startDt = getdate_today(), endDt = ''):
+
     # Current Revised Data Structure:
     """
         time: Timestamp for when the task was written, needed for proper execution and organization of tasks
@@ -53,7 +68,7 @@ def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, start
 
 # Returns a dictionary with a single element to the requesting function:
 # Key being the word "tasks" and the value is a list of all tasks being returned
-def get_tasks(date):
+def get_tasks(dates):
 
     # Pulls every task out of the database into a working list
 #    tasks_list = [dict(x) for x in task_table.find()]
@@ -64,43 +79,52 @@ def get_tasks(date):
     # This is the list tasks will be inserted into to be returned
     tasks = []
 
-    year, month, day = date.split('-')
-    viewDay = datetime.datetime(int(year), int(month), int(day))
+    for d in dates:
+        year, month, day = d.split('-')
+        viewDay = datetime.datetime(int(year), int(month), int(day))
 
-    for task in tasks_list:
-        stYear, stMonth, stDay = task['startDate'].split('-')
-        startDay = datetime.datetime(int(stYear), int(stMonth), int(stDay))
+        for task in tasks_list:
+            viewTask = dict(task)
+            stYear, stMonth, stDay = viewTask['startDate'].split('-')
+            startDay = datetime.datetime(int(stYear), int(stMonth), int(stDay))
 
-        # A task cannot be returned if it has not yet started
-        if startDay <= viewDay:
-            if task['endDate'] == '':
+            # A task cannot be returned if it has not yet started
+            if startDay <= viewDay:
+                if viewTask['endDate'] == '':
 
-                # If a task has a repeatFreq of 0, this if statement avoids a divide by zero error
-                if task['repeatFreq'] == 0:
-                    if startDay == viewDay:
-                        tasks.append(task)
-                else:
-                    # A task is passed into the list if the number of days between the current date
-                    # and the start date is a multiple of the frequency of the task
-                    numDays = int((viewDay - startDay).days)
-                    if numDays % task['repeatFreq'] == 0:
-                        tasks.append(task)
-
-            else:
-                #Which branch does this push to?
-                endYear, endMonth, endDay = task['endDate'].split('-')
-                endDay = datetime.datetime(int(endYear), int(endMonth), int(endDay))
-
-                # A task cannot be returned if it has ended
-                if viewDay <= endDay:
-
-                    # Same logic as described above
-                    if task['repeatFreq'] == 0: 
+                    # If a task has a repeatFreq of 0, this if statement avoids a divide by zero error
+                    if viewTask['repeatFreq'] == 0:
                         if startDay == viewDay:
-                            tasks.append(task)
+                            viewTask['list'] = viewDay.strftime("%Y-%m-%d")
+                            viewTask['id'] = viewDay.strftime("%Y-%m-%d") + '-' + str(viewTask['id'])
+                            tasks.append(viewTask)
                     else:
+                        # A task is passed into the list if the number of days between the current date
+                        # and the start date is a multiple of the frequency of the task
                         numDays = int((viewDay - startDay).days)
-                        if numDays % task['repeatFreq'] == 0:
-                            tasks.append(task)
+                        if numDays % viewTask['repeatFreq'] == 0:
+                            viewTask['list'] = viewDay.strftime("%Y-%m-%d")
+                            viewTask['id'] = viewDay.strftime("%Y-%m-%d") + '-' + str(viewTask['id'])
+                            tasks.append(viewTask)
+
+                else:
+                    endYear, endMonth, endDay = viewTask['endDate'].split('-')
+                    endDay = datetime.datetime(int(endYear), int(endMonth), int(endDay))
+
+                    # A task cannot be returned if it has ended
+                    if viewDay <= endDay:
+
+                        # Same logic as described above
+                        if viewTask['repeatFreq'] == 0:
+                            if startDay == viewDay:
+                                viewTask['list'] = viewDay.strftime("%Y-%m-%d")
+                                viewTask['id'] = viewDay.strftime("%Y-%m-%d") + '-' + str(viewTask['id'])
+                                tasks.append(viewTask)
+                        else:
+                            numDays = int((viewDay - startDay).days)
+                            if numDays % viewTask['repeatFreq'] == 0:
+                                viewTask['list'] = viewDay.strftime("%Y-%m-%d")
+                                viewTask['id'] = viewDay.strftime("%Y-%m-%d") + '-' + str(viewTask['id'])
+                                tasks.append(viewTask)
 
     return { "tasks": tasks }

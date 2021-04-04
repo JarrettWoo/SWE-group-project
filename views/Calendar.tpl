@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang"en">
 <head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <style>
 * {
     margin: 0;
@@ -119,7 +120,7 @@
         <div class="month">
           <i class="fas fa-angle-left prev"></i>
           <div class="date">
-            <h1></h1>
+            <h1 id=mon></h1>
             <p></p>
           </div>
           <i class="fas fa-angle-right next"></i>
@@ -138,9 +139,30 @@
     </div>
   </body>
 <script>
+
+function addClickEvents(selected, lastDay) {
+	for (let i = 1; i <= lastDay; ++i) {
+		if (i != selected) {
+			let currElem = document.getElementById(i);
+			let currMonth = date.getMonth() + 1;
+			let currYear = date.getFullYear();
+			currElem.addEventListener("click", function() {
+			    var day = String(currYear) + '-'
+			    day += String(currMonth) + '-'
+			    day += String(i)
+
+                api_new_day(day);
+				get_current_tasks(day);
+			});
+		}
+	}
+}
+
 const date = new Date();
 
 const renderCalendar = () => {
+  let selectedDay = 0;
+
   date.setDate(1);
 
   const monthDays = document.querySelector(".days");
@@ -198,15 +220,22 @@ const renderCalendar = () => {
       date.getMonth() === new Date().getMonth()
     ) {
       days += `<div class="today">${i}</div>`;
+	  selectedDay = i;
     } else {
-      days += `<div>${i}</div>`;
+      days += `<div id="${i}">${i}</div>`;
     }
   }
 
-  for (let j = 1; j <= nextDays; j++) {
-    days += `<div class="next-date">${j}</div>`;
+  if (nextDays > 0){
+    for (let j = 1; j <= nextDays; j++) {
+      days += `<div class="next-date">${j}</div>`;
+      monthDays.innerHTML = days;
+    }
+  } else {
     monthDays.innerHTML = days;
   }
+
+  addClickEvents(selectedDay, lastDay);
 };
 
 document.querySelector(".prev").addEventListener("click", () => {
@@ -220,6 +249,7 @@ document.querySelector(".next").addEventListener("click", () => {
 });
 
 renderCalendar();
+
 </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
