@@ -1,8 +1,6 @@
 % include("header.tpl")
 % include("banner.tpl")
 
-%include("Calendar.tpl")
-
 <style>
 	.save_edit,
 	.undo_edit,

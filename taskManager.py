@@ -3,9 +3,11 @@
 import dataset
 import datetime
 import time
+from bottle import request
 
 # Establishing Database connection
 taskbook_db = dataset.connect('sqlite:///taskbook.db')
+session_db = dataset.connect('sqlite:///session.db')
 task_table = taskbook_db.get_table('task')
 
 
@@ -14,11 +16,18 @@ def getdate_today():
     Sys_date = datetime.datetime.now()
     return Sys_date.strftime("%Y-%m-%d")
 
+# Gets session information from the cookie. Used to save tasks with users.
+def getUser():
+    session_id = request.cookies.get('session_id', None)
+    session_table = session_db.get_table('session')
+    sessions = list(session_table.find(session_id = session_id))
+    session = sessions[0]
+    return session['username']
+
 
 # A basic revision for the insertion of tasks into the tasks table. Will further revise to include functionality
 # for inserting multiple lines of tasks.
-def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, startDt = getdate_today(), endDt = ''):
-
+def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, startDt = getdate_today(), endDt = '', col = ''):
     # Current Revised Data Structure:
     """
         time: Timestamp for when the task was written, needed for proper execution and organization of tasks
@@ -37,8 +46,8 @@ def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, start
 
     """
     task_table.insert(
-        {"time":time.time(), "description":taskDef, "list":dateList, "completed":status,
-         "repeatFreq":repeatNum, "startDate":startDt, "endDate":endDt}
+        {"time":time.time(), "user":getUser(), "description":taskDef, "list":dateList, "completed":status,
+         "repeatFreq":repeatNum, "startDate":startDt, "endDate":endDt, "color":col}
     )
 
 
@@ -47,7 +56,10 @@ def insert_Tasks(taskDef, status=False, dateList = 'today', repeatNum = 0, start
 def get_tasks(date):
 
     # Pulls every task out of the database into a working list
-    tasks_list = [dict(x) for x in task_table.find()]
+    #tasks_list = [dict(x) for x in task_table.find()]
+
+    # Pulls tasks associated with 'user' into a working list
+    tasks_list = [dict(x) for x in task_table.find(user = getUser())]
 
     # This is the list tasks will be inserted into to be returned
     tasks = []
@@ -65,7 +77,7 @@ def get_tasks(date):
 
                 # If a task has a repeatFreq of 0, this if statement avoids a divide by zero error
                 if task['repeatFreq'] == 0:
-                    if startDay == viewDay:
+                    if startDay <= viewDay:
                         tasks.append(task)
                 else:
                     # A task is passed into the list if the number of days between the current date
@@ -82,8 +94,8 @@ def get_tasks(date):
                 if viewDay <= endDay:
 
                     # Same logic as described above
-                    if task['repeatFreq'] == 0:
-                        if startDay == viewDay:
+                    if task['repeatFreq'] == 0: 
+                        if startDay <= viewDay:
                             tasks.append(task)
                     else:
                         numDays = int((viewDay - startDay).days)
