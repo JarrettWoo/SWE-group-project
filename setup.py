@@ -6,8 +6,14 @@ Sys_date = datetime.datetime.now()
 if __name__ == "__main__":
 	taskbook_db = dataset.connect('sqlite:///taskbook.db')  
 	task_table = taskbook_db.get_table('task')
+	date_table = taskbook_db.get_table('view')
 	task_table.drop()
+	date_table.drop()
 	task_table = taskbook_db.create_table('task')
+	date_table = taskbook_db.create_table('view')
+	date_table.insert(
+		{"savedDate": taskManager.getdate_tomorrow(taskManager.getdate_today())}
+	)
 
 	user_db = dataset.connect('sqlite:///user.db')
 	user_table = user_db.get_table('user')
