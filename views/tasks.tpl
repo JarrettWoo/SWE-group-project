@@ -1,5 +1,6 @@
 % include("header.tpl")
 % include("banner.tpl")
+% include("Calender.tpl")
 
 %include("Calender.tpl")
 
