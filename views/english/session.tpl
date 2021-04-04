@@ -1,5 +1,5 @@
-% include("english/header.tpl")
-% include("english/banner.tpl")
+% include("header.tpl")
+% include("banner.tpl")
 <H1>Session Info</H1>
 {{session_str}}
-% include("english/footer.tpl")
+% include("footer.tpl")

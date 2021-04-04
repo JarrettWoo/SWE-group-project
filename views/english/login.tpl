@@ -1,5 +1,5 @@
-% include("english/header.tpl")
-% include("english/banner.tpl")
+% include("header.tpl")
+% include("banner.tpl")
 
 <form class="w3-display-middle w3-round form" action="" method="POST">
 	<label>Username</label>
@@ -11,4 +11,4 @@
 	<button type="Submit" class="w3-button w3-round w3-teal">Submit</button>
 </form>
 	
-% include("english/footer.tpl")
+% include("footer.tpl")
