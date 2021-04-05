@@ -1,6 +1,11 @@
-from behave_webdriver.steps import *
 from behave import *
 from selenium import webdriver
+from pyvirtualdisplay import Display
+#import chromedriver
 
-def before_all(context):
-    context.browser = webdriver.Chrome()
+def before_feature(context, site):
+    with Display():
+        context.browser = webdriver.Chrome()
+
+def after_feature(context, site):
+    context.browser.quit()
