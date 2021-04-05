@@ -48,7 +48,9 @@ function testColorChanging() {
 		});
 	}
 
-	get_current_tasks();
+	api_remember_days(function(result) {
+		get_current_tasks(result['savedDate']);
+	});
 
 	window.setTimeout(function() { 
 		for (let i = 0; i < ids.length; ++i) {
