@@ -1,7 +1,7 @@
 % include("header.tpl")
 % include("banner.tpl")
 
-% include("Calender.tpl")
+% include("Calendar.tpl")
 
 <style>
 	.save_edit,

@@ -4,7 +4,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 
 
-<div class="cal container" id="calContainer">
+<div class="cal container">
 	<div class="cal calendar">
 		<div class="cal month">
 			<i class="cal fas fa-angle-left prev"></i>
@@ -42,8 +42,6 @@
 
 					api_new_day(day);
 					get_current_tasks(day);
-
-					document.getElementById("calContainer").style.display = "none";
 				});
 			}
 		}
