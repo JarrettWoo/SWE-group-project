@@ -1,6 +1,8 @@
 % include("header.tpl")
 % include("banner.tpl")
 
+% include("Calendar.tpl")
+
 <style>
 	.save_edit,
 	.undo_edit,
@@ -101,11 +103,13 @@ function api_get_tomorrow(success_function) {
 }
 
 function api_create_task(task, success_function) {
-  console.log("creating task with:", task)
-  $.ajax({url:"api/tasks", type:"POST", 
-          data:JSON.stringify(task), 
-          contentType:"application/json; charset=utf-8",
-          success:success_function});
+	console.log("creating task with:", task);
+	$.ajax({
+		url: "api/tasks", type: "POST",
+		data: JSON.stringify(task),
+		contentType: "application/json; charset=utf-8",
+		success: success_function
+	});
 }
 
 function api_update_task(task, success_function) {
@@ -172,28 +176,36 @@ function edit_task(event) {
 }
 
 function save_edit(event) {
-  console.log("save item", event.target.id)
-  id = event.target.id.replace("save_edit-","");
-  console.log("desc to save = ",$("#input-" + id).val())
-  if ((id != "today") & (id != "tomorrow")) {
-    api_update_task({'id':id, description:$("#input-" + id).val()},
-                    function(result) { 
-                      console.log(result);
-                      api_remember_days(function(result) {
-                        get_current_tasks(result['savedDate']);
-                    });
-                      $("#current_input").val("")
-                    } );
-  } else {
-    api_create_task({description:$("#input-" + id).val(), list:id},
-                    function(result) { 
-                      console.log(result);
-                      api_remember_days(function(result) {
-                        get_current_tasks(result['savedDate']);
-                    });
-                      $("#current_input").val("")
-                    } );
-  }
+	console.log("save item", event.target.id)
+	id = event.target.id.replace("save_edit-", "");
+	console.log("desc to save = ", $("#input-" + id).val())
+
+	if ($("#input-" + id).val() != "") {
+		if ((id != "today") & (id != "tomorrow")) {
+			api_update_task({ 'id': id, description: $("#input-" + id).val() },
+				function (result) {
+					console.log(result);
+					api_remember_days(function (result) {
+						get_current_tasks(result['savedDate']);
+					});
+					$("#current_input").val("")
+				});
+		} 
+		else {
+			
+			api_create_task({description: $("#input-" + id).val(), list: id},
+				function (result) {
+					console.log("t", result);
+					api_remember_days(function (result) {
+						get_current_tasks(result['savedDate']);
+					});
+					$("#current_input").val("")
+				});
+		}
+	}
+	else {
+		$("#input-" + id).addClass("error");
+	}
 }
 
 function undo_edit(event) {
@@ -251,8 +263,8 @@ function display_task(x, converter) {
 			'  </td>' +
 			'</tr>';
 	} else {
-		console.log(x)
-		console.log(converter)
+		console.log("id:" + x.id)
+		//console.log(converter)
 
 		if ((x.list == converter['today'])) {
 			x.list = 'today'
@@ -340,7 +352,29 @@ function color_task(id){
 		task_id: id,
 		task_color: color
 	};
+
+	$.ajax({
+		url: "api/color_task", type: "PUT",
+		data: JSON.stringify(data),
+		contentType: "application/json; charset=utf-8",
+		success: function() {
+			console.log("colored task successfully");
+			api_remember_days(function(result) {
+				get_current_tasks(result['savedDate']);
+			});
+		}
+	});
 }
+
+$("#calBtn").click(function() {
+	const container = document.getElementById("calContainer");
+	if (container.style.display == "flex") {
+		container.style.display = "none";
+	}
+	else {
+		container.style.display = "flex";
+	}
+});
 
 $(document).ready(function () {
 	api_get_tomorrow(function (result) {
