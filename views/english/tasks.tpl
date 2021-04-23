@@ -142,6 +142,37 @@ function input_keypress(event) {
 
 /* EVENT HANDLERS */
 
+function move_task(event) {
+	if ($("#current_input").val() != "") { return }
+	console.log("move item", event.target.id)
+	id = event.target.id.replace("move_task-", "");
+
+	let dates;
+	api_remember_days(function(result) {
+		api_get_days(result['savedDate'], function(getdays_result) {
+			dates = getdays_result;
+
+			const target_list = event.target.className.search("today") > 0 ? "tomorrow" : "today";
+			const target_date = dates[target_list];
+
+			api_update_task({ 'id': id, 'startDate': target_date, 'list':target_list },
+
+			function (result) {
+				console.log(result);
+				api_remember_days(function(result) {
+						get_current_tasks(result['savedDate']);
+					});
+			});
+		});
+	});
+
+	// target_list = event.target.className.search("today") > 0 ? "tomorrow" : "today";
+	// api_update_task({ 'id': id, 'list': target_list },
+
+	
+}
+
+
 function complete_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("complete item", event.target.id )
@@ -164,6 +195,7 @@ function edit_task(event) {
   // move the text to the input editor
   $("#input-"+id).val($("#description-"+id).text());
   // hide the text display
+  $("#move_task-"+id).prop('hidden', true);
   $("#description-"+id).prop('hidden', true);
   $("#edit_task-"+id).prop('hidden', true);
   $("#delete_task-"+id).prop('hidden', true);
@@ -246,7 +278,7 @@ function display_task(x, converter) {
 	let darkClass = "";
 	if (darkmode) { darkClass = "darkmode"; }
 
-	arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
+	
 	completed = x.completed ? " completed" : "";
 	if ((x.id == "today") || (x.id == "tomorrow")) {
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
@@ -272,6 +304,7 @@ function display_task(x, converter) {
 		else {
 			x.list = 'tomorrow'
 		}
+		arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
 
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
 			'  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons '+darkClass+'">' + arrow + '</span></td>' +
@@ -326,6 +359,7 @@ function get_current_tasks(day) {
 		}
 
 		// wire the response events
+		$(".move_task").click(move_task);
 		$(".description").click(complete_task)
 		$(".edit_task").click(edit_task);
 		$(".save_edit").click(save_edit);

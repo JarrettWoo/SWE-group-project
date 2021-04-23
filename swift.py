@@ -489,7 +489,7 @@ def update_task():
 	try:
 		data = request.json
 		for key in data.keys():
-			assert key in ["id","description","completed"], f"Illegal key '{key}'"
+			assert key in ["id","description","completed", "list", "startDate"], f"Illegal key '{key}'"
 		if "description" in request:
 			assert type(data['description']) is str, "Description is not a string."
 			assert len(data['description'].strip()) > 0, "Description is length zero."
