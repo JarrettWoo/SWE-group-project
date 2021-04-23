@@ -1,16 +1,17 @@
 #from behave_webdriver.steps import *
 from behave import *
 import requests
+from bs4 import BeautifulSoup
 
 @given(u'we can access taskbook')
 def step_impl(context):
-    context.r = requests.get('http://bbehnkese.pythonanywhere.com/')
+    context.r = requests.get('http://bbehnkese.pythonanywhere.com/login', allow_redirects=False)
 
 @when(u'we visit the URL for the project')
 def step_impl(context):
     pass #previous step accounts for this, could change it
 
-@then(u'we get the taskbook page')
+@then(u'we get the login page')
 def step_impl(context):
     assert(context.r.status_code == 200)
 
@@ -19,24 +20,28 @@ def step_impl(context):
     context.payload = {
         'input-today': 'test task'
     }
-    context.r = requests.post('http://bbehnkese.pythonanywhere.com/tasks', data=context.payload)
+    context.r = context.s.post('http://bbehnkese.pythonanywhere.com/tasks', data=context.payload)
 
 @then(u'the task is available')
 def step_impl(context):
-    #assert(context.r.status_code == 200)
-    pass #tasks need to be available first
+    bs = BeautifulSoup(context.r.text)
 
 @when(u'we input our credentials')
 def step_impl(context):
+    context.s = requests.Session()
     context.payload = {
-        'Username': 'test',
-        'Password': 'test'
+        'un': 'test',
+        'pw': 'test'
     }
-    context.LogIn = requests.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
+    context.LogIn = context.s.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
 
 @then(u'we are signed in')
 def step_impl(context):
-    assert(context.LogIn.status_code == 200)
+    bs = BeautifulSoup(context.LogIn.text, 'html.parser')
+    if "w3-row taskbook-container" in bs:
+        print('Pass.')
+    else:
+        print('Fail.')
 
 @given(u'we are signed in')
 def step_impl(context):
