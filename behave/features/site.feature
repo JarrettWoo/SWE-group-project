@@ -15,3 +15,9 @@ Feature: Taskbook Website
         And   we are signed in
         When  we make a task
         Then  the task is available
+
+    Scenario: Accessing Lightsail Server
+        Given we can access lightsail
+        When  we sign in
+        Then  we access taskbook page
+        And   we create a task
