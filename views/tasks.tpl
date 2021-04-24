@@ -46,6 +46,9 @@
 	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
 		<a href="/remove">Delete Account</a>
 	</span>
+	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
+		<a href="/general">General Tasks</a>
+	</span>
 </div>
 <input id="current_input" hidden value="" />
 <script src="static/tests.js"></script>
@@ -102,24 +105,24 @@ function api_get_tomorrow(success_function) {
 
 function api_create_task(task, success_function) {
   console.log("creating task with:", task)
-  $.ajax({url:"api/tasks", type:"POST", 
-          data:JSON.stringify(task), 
+  $.ajax({url:"api/tasks", type:"POST",
+          data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
 
 function api_update_task(task, success_function) {
   console.log("updating task with:", task)
-  $.ajax({url:"api/tasks", type:"PUT", 
-          data:JSON.stringify(task), 
+  $.ajax({url:"api/tasks", type:"PUT",
+          data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
 
 function api_delete_task(task, success_function) {
   console.log("deleting task with:", task)
-  $.ajax({url:"api/tasks", type:"DELETE", 
-          data:JSON.stringify(task), 
+  $.ajax({url:"api/tasks", type:"DELETE",
+          data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
@@ -144,8 +147,8 @@ function complete_task(event) {
   id = event.target.id.replace("description-","");
   completed = event.target.className.search("completed") > 0;
   console.log("updating :",{'id':id, 'completed':completed==false})
-  api_update_task({'id':id, 'completed':completed==false}, 
-                  function(result) { 
+  api_update_task({'id':id, 'completed':completed==false},
+                  function(result) {
                     console.log(result);
                     api_remember_days(function(result) {
                         get_current_tasks(result['savedDate']);
@@ -177,7 +180,7 @@ function save_edit(event) {
   console.log("desc to save = ",$("#input-" + id).val())
   if ((id != "today") & (id != "tomorrow")) {
     api_update_task({'id':id, description:$("#input-" + id).val()},
-                    function(result) { 
+                    function(result) {
                       console.log(result);
                       api_remember_days(function(result) {
                         get_current_tasks(result['savedDate']);
@@ -186,7 +189,7 @@ function save_edit(event) {
                     } );
   } else {
     api_create_task({description:$("#input-" + id).val(), list:id},
-                    function(result) { 
+                    function(result) {
                       console.log(result);
                       api_remember_days(function(result) {
                         get_current_tasks(result['savedDate']);
@@ -221,7 +224,7 @@ function delete_task(event) {
   console.log("delete item", event.target.id )
   id = event.target.id.replace("delete_task-","");
   api_delete_task({'id':id},
-                  function(result) { 
+                  function(result) {
                     console.log(result);
                     api_remember_days(function(result) {
                         get_current_tasks(result['savedDate']);
@@ -256,7 +259,7 @@ function display_task(x, converter) {
 
 		if ((x.list == converter['today'])) {
 			x.list = 'today'
-		} 
+		}
 		else {
 			x.list = 'tomorrow'
 		}
@@ -335,7 +338,7 @@ function close_popup(id) {
 function color_task(id){
 	const selColor = document.getElementById("selColor-" + id);
 	const color = selColor.value;
-	
+
 	const data = {
 		task_id: id,
 		task_color: color

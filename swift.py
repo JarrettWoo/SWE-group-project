@@ -138,7 +138,7 @@ def register():
 	# Makes sure passwords match
 	if password != passwordConfirm:
 		return redirect('/register')
-	
+
 	session_id = request.cookies.get('session_id', None)
 	session_table = session_db.create_table('session')
 
@@ -151,7 +151,7 @@ def register():
 		else:
 			session = {}
 	else:
-		session_id = randint(10000000, 20000000)  
+		session_id = randint(10000000, 20000000)
 		session = {
 			"session_id":session_id,
 			"started_at":time.time(),
@@ -205,7 +205,7 @@ def login():
 		session_id = int(session_id)
 	else:
 		session_id = randint(10000000, 20000000)
-	
+
 	#try to load session info
 	session_table = session_db.create_table('session')
 	sessions = list(session_table.find(session_id = session_id))
@@ -218,7 +218,7 @@ def login():
 		session_table.insert(session)  # put session into db
 	else:
 		session = sessions[0]
-	
+
 	username = request.forms.get('un')  # Get username and password from login page
 	password = request.forms.get('pw')
 	user_table = user_db.create_table('user')
@@ -249,7 +249,7 @@ def logout():
 		session_id = int(session_id)
 	else:
 		session_id = randint(10000000, 20000000)
-	
+
 	#try to load session info
 	session_table = session_db.create_table('session')
 	sessions = list(session_table.find(session_id = session_id))
@@ -266,7 +266,7 @@ def logout():
 	user_table = user_db.create_table('user')
 	users = list(user_table.find(username = session["username"]))
 
-	if len(list(users)) > 0:	
+	if len(list(users)) > 0:
 		user_profile = list(users)[0]
 		user_profile["language"] = session["language"]
 		user_table.update(row = user_profile, keys = 'username')
@@ -323,7 +323,7 @@ def remove():
 		user_profile = list(users)[0]
 	else:
 		return redirect('/login')
-	
+
 	# Makes sure a user is logged in | Possibly redundant due to checks when loading session info
 	if session["username"] == None:
 		return redirect('/tasks')
@@ -347,7 +347,7 @@ def english():
 		session_id = int(session_id)
 	else:
 		session_id = randint(10000000, 20000000)
-	
+
 	#try to load session info
 	session_table = session_db.create_table('session')
 	sessions = list(session_table.find(session_id = session_id))
@@ -360,10 +360,10 @@ def english():
 		session_table.insert(session)  # put session into db
 	else:
 		session = sessions[0]
-	
+
 	session["language"] = "english"
 	session_table.update(row = session, keys = 'session_id')
-	
+
 	return redirect("/tasks")
 
 
@@ -374,7 +374,7 @@ def japanese():
 		session_id = int(session_id)
 	else:
 		session_id = randint(10000000, 20000000)
-	
+
 	#try to load session info
 	session_table = session_db.create_table('session')
 	sessions = list(session_table.find(session_id = session_id))
@@ -390,7 +390,7 @@ def japanese():
 
 	session['language'] = "japanese"
 	session_table.update(row = session, keys = 'session_id')
-	
+
 	return redirect("/tasks")
 
 
@@ -401,7 +401,7 @@ def hindi():
 		session_id = int(session_id)
 	else:
 		session_id = randint(10000000, 20000000)
-	
+
 	#try to load session info
 	session_table = session_db.create_table('session')
 	sessions = list(session_table.find(session_id = session_id))
@@ -417,7 +417,7 @@ def hindi():
 
 	session["language"] = "hindi"
 	session_table.update(row = session, keys = 'session_id')
-	
+
 	return redirect("/tasks")
 
 
@@ -551,7 +551,7 @@ def delete_task():
 
 @put('/api/color_task')
 def color_task():
-	taskbook_db = dataset.connect('sqlite:///taskbook.db')  
+	taskbook_db = dataset.connect('sqlite:///taskbook.db')
 	data = request.json
 	task_id = data['task_id']
 	task_color = data['task_color']
@@ -560,13 +560,14 @@ def color_task():
 	query = "UPDATE task SET color= :colorKey WHERE id = :idKey"
 	taskbook_db.query(query, keywords)
 
+
 ############## Functions for use with the 'General-Tasks' page ################
 @get('/api/tasks-gen')
 def get_general_tasks():
     'return a list of tasks with endDt = 1970-1-1'
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
-    return taskManager.get_tasks('1970-1-1') #Date that denotes it as general
+    return taskManager.get_tasks({"1970-1-1"}) #Date that denotes it as general
 
 @post('/api/tasks-gen')
 def create_general_task():
@@ -641,4 +642,3 @@ if PYTHONANYWHERE:
 else:
 	if __name__ == "__main__":
 		run(host='localhost', port=8080, debug=True)
-

@@ -1,15 +1,53 @@
-
 % include("header.tpl")
 % include("banner.tpl")
 
 <style>
-  .save_edit, .undo_edit, .description, .edit_task, .delete_task {
+  .save_edit, .undo_edit, .description, .edit_task, .delete_task, .choose_color {
     cursor: pointer;
   }
   .completed {text-decoration: line-through;}
   .description { padding-left:8px }
+
 </style>
 
+<div class="w3-row taskbook-container">
+	<div class="w3-half w3-container s6" id="left-container">
+		<div class="w3-row w3-xxlarge w3-margin-bottom">
+			<h1 class="title">General Tasks:</h1>
+		</div>
+			<table id="task-list-general" class="w3-table">
+			</table>
+			<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
+	</div>
+	<!-- <div class="stripe">&nbsp;</div> -->
+	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
+		<a href="/remove">Delete Account</a>
+	</span>
+</div>
+<input id="current_input" hidden value="" />
+<script src="static/tests.js"></script>
+<script>
+
+	let darkmode = false;
+	$("#darkModeBtn").click(function() {
+		darkmode = !darkmode;
+
+		if (darkmode === true) {
+			//this nonsense just loops through the entire DOM
+			$($("*").get().reverse()).each(function(index) {
+				$(this).addClass("darkmode");
+			})
+		}
+		else {
+			$($("*").get().reverse()).each(function(index) {
+				$(this).removeClass("darkmode");
+			})
+		}
+	})
+
+
+
+/* Old Code
 <div class="w3-row">
   <div class="w3-col s6 w3-container w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-border-white">
     <div class="w3-row w3-xxlarge w3-bottombar w3-border-black w3-margin-bottom">
@@ -22,6 +60,9 @@
 </div>
 <input id="current_input" hidden value=""/>
 <script>
+*/
+
+
 
 /* API CALLS */
 
@@ -153,39 +194,56 @@ function delete_task(event) {
 }
 
 function display_task(x) {
+  let popup = "";
+	let darkClass = "";
+	if (darkmode) { darkClass = "darkmode"; }
+
   completed = x.completed ? " completed" : "";
   if ((x.id == "general")) {
-    t = '<tr id="task-'+x.id+'" class="task">' +
-        '  <td style="width:36px"></td>' +
-        '  <td><span id="editor-'+x.id+'">' +
-        '        <input id="input-'+x.id+'" style="height:22px" class="w3-input" '+
-        '          type="text" autofocus placeholder="Add an item..."/>'+
-        '      </span>' +
-        '  </td>' +
-        '  <td style="width:72px">' +
-        '    <span id="filler-'+x.id+'" class="material-icons">more_horiz</span>' +
-        '    <span id="save_edit-'+x.id+'" hidden class="save_edit material-icons">done</span>' +
-        '    <span id="undo_edit-'+x.id+'" hidden class="undo_edit material-icons">cancel</span>' +
-        '  </td>' +
-        '</tr>';
+      t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
+    			'  <td style="width:36px"></td>' +
+    			'  <td><span id="editor-' + x.id + '">' +
+    			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" ' +
+    			'          type="text" autofocus placeholder="Add an item..."/>' +
+    			'      </span>' +
+    			'  </td>' +
+    			'  <td style="width:72px">' +
+    			// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
+    			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">Add</span>' +
+    			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
+    			'  </td>' +
+    			'</tr>';
   } else {
-    t = '<tr id="task-'+x.id+'" class="task">' +
-        '  <td style="width:36px"></td>' +
-        '  <td><span id="description-'+x.id+'" class="description' + completed + '">' + x.description + '</span>' +
-        '      <span id="editor-'+x.id+'" hidden>' +
-        '        <input id="input-'+x.id+'" style="height:22px" class="w3-input" type="text" autofocus/>' +
-        '      </span>' +
-        '  </td>' +
-        '  <td>' +
-        '    <span id="edit_task-'+x.id+'" class="edit_task '+x.list+' material-icons">edit</span>' +
-        '    <span id="delete_task-'+x.id+'" class="delete_task material-icons">delete</span>' +
-        '    <span id="save_edit-'+x.id+'" hidden class="save_edit material-icons">done</span>' +
-        '    <span id="undo_edit-'+x.id+'" hidden class="undo_edit material-icons">cancel</span>' +
-        '  </td>' +
-        '</tr>';
+    console.log(x.description)
+    t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
+      '  <td style="width:36px"></td>' +
+			'  <td style="width:65%;"><span style="background-color:' + x.color + '" id="description-' + x.id + '" class="description' + completed + ' '+darkClass+'">' + x.description + '</span>' +
+			'      <span id="editor-' + x.id + '" hidden>' +
+			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" type="text" autofocus/>' +
+			'      </span>' +
+			'  </td>' +
+			'  <td>' +
+			'    <span id="edit_task-' + x.id + '" class="edit_task ' + x.list + ' material-icons '+darkClass+'">edit</span>' +
+			'    <span id="delete_task-' + x.id + '" class="delete_task material-icons '+darkClass+'">delete</span>' +
+			'    <span id="choose_color-' + x.id + '" class="choose_color material-icons '+darkClass+'" onclick="choose_color('+x.id+')">palette</span>' +
+			'    <span id="save_edit-' + x.id + '" hidden class="save_edit material-icons '+darkClass+'">done</span>' +
+			'    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons '+darkClass+'">cancel</span>' +
+			'  </td>' +
+			'</tr>';
+		popup = '<div id="dropdown-'+x.id+'" class="dropdown '+darkClass+'">' +
+				'	<h3>Select highlight color:</h3>' +
+				'	<select id="selColor-'+x.id+'" class="'+darkClass+'">' +
+				'		<option value="#FFFF00" class="'+darkClass+'">Yellow</option>' +
+				'		<option value="#00FF00" class="'+darkClass+'">Green</option>' +
+				'		<option value="lightblue" class="'+darkClass+'">Blue</option>' +
+				'	</select><br>' +
+				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
+				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
+				'</div>';
   }
-  $("#task-list-" + x.list).append(t);
+  $("#task-list-general").append(t);
   $("#current_input").val("")
+  $("body").append(popup);
 }
 
 function get_current_tasks() {
@@ -207,6 +265,25 @@ function get_current_tasks() {
     // set all inputs to set flag
     $("input").keypress(input_keypress);
   });
+}
+
+function choose_color(id) {
+	const colSelect = document.getElementById("dropdown-"+id);
+	colSelect.style.display = "block";
+}
+function close_popup(id) {
+	const colSelect = document.getElementById("dropdown-"+id);
+	colSelect.style.display = "none";
+}
+function color_task(id){
+	const selColor = document.getElementById("selColor-" + id);
+	const color = selColor.value;
+
+	const data = {
+		task_id: id,
+		task_color: color
+	};
+  console.log("Coloring: " + id + " to " + color);
 }
 
 $(document).ready(function() {
