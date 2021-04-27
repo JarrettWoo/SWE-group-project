@@ -23,6 +23,9 @@
 	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
 		<a href="/remove">Delete Account</a>
 	</span>
+  <span class="w3-button w3-display-bottomleft w3-round w3-teal small-margin small-button">
+		<a href="/tasks">Task List</a>
+	</span>
 </div>
 <input id="current_input" hidden value="" />
 <script src="static/tests.js"></script>
@@ -266,7 +269,16 @@ function color_task(id){
 		task_id: id,
 		task_color: color
 	};
-  console.log("Coloring: " + id + " to " + color);
+
+  $.ajax({
+    url: "api/color_task", type: "PUT",
+    data: JSON.stringify(data),
+    contentType: "application/json; charset=utf-8",
+    success: function() {
+      console.log("colored task successfully");
+      get_current_tasks();
+    }
+  });
 }
 
 $(document).ready(function() {
