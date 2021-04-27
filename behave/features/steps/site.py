@@ -35,8 +35,14 @@ def step_impl(context):
 
 @given(u'we are signed in')
 def step_impl(context):
-    context.r = requests.get('http://bbehnkese.pythonanywhere.com/tasks')
-    assert(context.r.status_code == 200)
+    context.session = HTMLSession()
+    context.payload = {
+        'un': 'test',
+        'pw': 'test'
+    }
+    r = context.session.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
+    #context.r = requests.get('http://bbehnkese.pythonanywhere.com/tasks', allow_redirects=False)
+    #assert(context.LogIn.status_code == 200)
 
 @when(u'we make a task')
 def step_impl(context):
@@ -46,18 +52,23 @@ def step_impl(context):
         'pw': 'test'
     }
     r = context.session.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
-    r2 = context.session.get('http://bbehnkese.pythonanywhere.com/tasks', verify=False)
-    testTask = {
+    #r2 = context.session.get('http://bbehnkese.pythonanywhere.com/tasks', verify=False)
+    parameters = {
         'task': "test task"
     }
-    tt = context.session.post('http://bbehnkese.pythonanywhere.com/api/tasks', data=testTask, verify=False)
+    payload = {
+        'task': "test task"
+    }
+    tt = context.session.post('http://bbehnkese.pythonanywhere.com/api/tasks', data=payload, verify=False, allow_redirects=False)
+    print(tt.text)
+    print('\n')
 
 @then(u'the task is available')
 def step_impl(context):
     #raise NotImplementedError(u'STEP: Then the task is available')
-    r = context.session.get('http://bbehnkese.pythonanywhere.com/tasks', verify=False)
+    r = context.session.get('http://bbehnkese.pythonanywhere.com/api/tasks/2021-4-9', verify=False, allow_redirects=False)
     #print(r.text)
-    r2 = r.html.search("test task")
+    #print('\n')
 
 @given(u'we can access lightsail')
 def step_impl(context):
@@ -84,6 +95,14 @@ def step_impl(context):
     parameters = {
         'task': "test task"
     }
-    r = context.session2.get('http://3.19.37.101:8080/tasks', params=parameters)
+    payload = {
+        'task': "test task"
+    }
+    tt = context.session2.post('http://3.19.37.101:8080/api/tasks', data=payload, verify=False, allow_redirects=False)
+
+@then(u'the lightsail task is available')
+def step_impl(context):
+    #raise NotImplementedError(u'STEP: Then the lightsail task is available')
+    r = context.session2.get('http://3.19.37.101:8080/api/tasks/2021-4-9', verify=False, allow_redirects=False)
     #print(r.text)
     #print('\n')
