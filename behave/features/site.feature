@@ -21,3 +21,4 @@ Feature: Taskbook Website
         When  we sign in
         Then  we access taskbook page
         And   we create a task
+        And   the lightsail task is available
