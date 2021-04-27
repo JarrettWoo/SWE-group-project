@@ -81,7 +81,9 @@ def step_impl(context):
 @then(u'we create a task')
 def step_impl(context):
     #raise NotImplementedError(u'STEP: Then we create a task')
-    testTask = {
+    parameters = {
         'task': "test task"
     }
-    r = context.session2.post('http://3.19.37.101:8080/api/tasks', data=testTask)
+    r = context.session2.get('http://3.19.37.101:8080/tasks', params=parameters)
+    #print(r.text)
+    #print('\n')
