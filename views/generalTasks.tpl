@@ -1,55 +1,30 @@
 % include("header.tpl")
 % include("banner.tpl")
 
-% include("Calendar.tpl")
-
 <style>
-	.save_edit,
-	.undo_edit,
-	.move_task,
-	.description,
-	.edit_task,
-	.delete_task,
-	.choose_color {
-		cursor: pointer;
-	}
+  .save_edit, .undo_edit, .description, .edit_task, .delete_task, .choose_color {
+    cursor: pointer;
+  }
+  .completed {text-decoration: line-through;}
+  .description { padding-left:8px }
 
-	.completed {
-		text-decoration: line-through;
-	}
-
-	.description {
-		padding-left: 8px
-	}
 </style>
 
 <div class="w3-row taskbook-container">
 	<div class="w3-half w3-container s6" id="left-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
-			<h1 class="title">Today</h1>
+			<h1 class="title">General Tasks:</h1>
 		</div>
-		<div id="leftTasks">
-			<table id="task-list-today" class="w3-table">
+			<table id="task-list-general" class="w3-table">
 			</table>
 			<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
-		</div>
 	</div>
 	<!-- <div class="stripe">&nbsp;</div> -->
-	<div class="w3-half s6 w3-container" id="right-container">
-		<div class="w3-row w3-xxlarge  w3-margin-bottom">
-			<h1 class="title">Tomorrow</h1>
-		</div>
-		<div id="rightTasks">
-			<table id="task-list-tomorrow" class="w3-table">
-			</table>
-			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
-		</div>
-	</div>
 	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
 		<a href="/remove">Delete Account</a>
 	</span>
-	<span class="w3-button w3-display-bottomleft w3-round w3-teal small-margin small-button">
-		<a href="/general">General Tasks</a>
+  <span class="w3-button w3-display-bottomleft w3-round w3-teal small-margin small-button">
+		<a href="/tasks">Task List</a>
 	</span>
 </div>
 <input id="current_input" hidden value="" />
@@ -73,41 +48,18 @@
 		}
 	})
 
+
+
 /* API CALLS */
 
-function api_get_tasks(day, success_function) {
-  var path = 'api/tasks/' + day
-  $.ajax({url:path, type:"GET",
+function api_get_tasks(success_function) {
+  $.ajax({url:"api/tasks-gen", type:"GET",
           success:success_function});
-}
-
-function api_get_days(day, success_function) {
-  var path = 'api/get_days/'
-  path += day
-  $.ajax({url:path, type:"GET",
-          success:success_function});
-}
-
-function api_remember_days(success_function) {
-    $.ajax({url:"api/remember", type:"GET",
-            success:success_function});
-}
-
-function api_new_day(date) {
-    console.log('changing the view date to: ', date);
-    $.ajax({url:"api/study", type:"POST",
-            data:JSON.stringify(date),
-            contentType:"application/json; charset=utf-8"});
-}
-
-function api_get_tomorrow(success_function) {
-    $.ajax({url:"api/tomorrow", type:"GET",
-            success:success_function});
 }
 
 function api_create_task(task, success_function) {
   console.log("creating task with:", task)
-  $.ajax({url:"api/tasks", type:"POST",
+  $.ajax({url:"api/tasks-gen", type:"POST",
           data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
@@ -115,7 +67,8 @@ function api_create_task(task, success_function) {
 
 function api_update_task(task, success_function) {
   console.log("updating task with:", task)
-  $.ajax({url:"api/tasks", type:"PUT",
+  task.id = parseInt(task.id)
+  $.ajax({url:"api/tasks-gen", type:"PUT",
           data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
@@ -123,7 +76,8 @@ function api_update_task(task, success_function) {
 
 function api_delete_task(task, success_function) {
   console.log("deleting task with:", task)
-  $.ajax({url:"api/tasks", type:"DELETE",
+  task.id = parseInt(task.id)
+  $.ajax({url:"api/tasks-gen", type:"DELETE",
           data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
@@ -141,7 +95,7 @@ function input_keypress(event) {
   $("#undo_edit-"+id).prop('hidden', false);
 }
 
-/* EVENT HANDLERS */
+
 
 function complete_task(event) {
   if ($("#current_input").val() != "") { return }
@@ -152,9 +106,7 @@ function complete_task(event) {
   api_update_task({'id':id, 'completed':completed==false},
                   function(result) {
                     console.log(result);
-                    api_remember_days(function(result) {
-                        get_current_tasks(result['savedDate']);
-                    });
+                    get_current_tasks();
                   } );
 }
 
@@ -180,22 +132,18 @@ function save_edit(event) {
   console.log("save item", event.target.id)
   id = event.target.id.replace("save_edit-","");
   console.log("desc to save = ",$("#input-" + id).val())
-  if ((id != "today") & (id != "tomorrow")) {
+  if (id != 'general') {
     api_update_task({'id':id, description:$("#input-" + id).val()},
                     function(result) {
                       console.log(result);
-                      api_remember_days(function(result) {
-                        get_current_tasks(result['savedDate']);
-                    });
+                      get_current_tasks();
                       $("#current_input").val("")
                     } );
   } else {
     api_create_task({description:$("#input-" + id).val(), list:id},
                     function(result) {
                       console.log(result);
-                      api_remember_days(function(result) {
-                        get_current_tasks(result['savedDate']);
-                    });
+                      get_current_tasks();
                       $("#current_input").val("")
                     } );
   }
@@ -205,13 +153,12 @@ function undo_edit(event) {
   id = event.target.id.replace("undo_edit-","")
   console.log("undo",[id])
   $("#input-" + id).val("");
-  if ((id != "today") & (id != "tomorrow")) {
+  if (id != 'general') {
     // hide the editor
     $("#editor-"+id).prop('hidden', true);
     $("#save_edit-"+id).prop('hidden', true);
     $("#undo_edit-"+id).prop('hidden', true);
     // show the text display
-    $("#move_task-"+id).prop('hidden', false);
     $("#description-"+id).prop('hidden', false);
     $("#filler-"+id).prop('hidden', false);
     $("#edit_task-"+id).prop('hidden', false);
@@ -228,46 +175,34 @@ function delete_task(event) {
   api_delete_task({'id':id},
                   function(result) {
                     console.log(result);
-                    api_remember_days(function(result) {
-                        get_current_tasks(result['savedDate']);
-                    });
+                    get_current_tasks();
                   } );
 }
 
-function display_task(x, converter) {
-	let popup = "";
+function display_task(x) {
+  let popup = "";
 	let darkClass = "";
 	if (darkmode) { darkClass = "darkmode"; }
 
-	arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
-	completed = x.completed ? " completed" : "";
-	if ((x.id == "today") || (x.id == "tomorrow")) {
-		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
-			'  <td style="width:36px"></td>' +
-			'  <td><span id="editor-' + x.id + '">' +
-			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" ' +
-			'          type="text" autofocus placeholder="Add an item..."/>' +
-			'      </span>' +
-			'  </td>' +
-			'  <td style="width:72px">' +
-			// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
-			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">Add</span>' +
-			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
-			'  </td>' +
-			'</tr>';
-	} else {
-		console.log(x)
-		console.log(converter)
-
-		if ((x.list == converter['today'])) {
-			x.list = 'today'
-		}
-		else {
-			x.list = 'tomorrow'
-		}
-
-		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
-			'  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons '+darkClass+'">' + arrow + '</span></td>' +
+  completed = x.completed ? " completed" : "";
+  if ((x.id == "general")) {
+      t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
+    			'  <td style="width:36px"></td>' +
+    			'  <td><span id="editor-' + x.id + '">' +
+    			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" ' +
+    			'          type="text" autofocus placeholder="Add an item..."/>' +
+    			'      </span>' +
+    			'  </td>' +
+    			'  <td style="width:72px">' +
+    			// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
+    			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">Add</span>' +
+    			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
+    			'  </td>' +
+    			'</tr>';
+  } else {
+    console.log(x.description)
+    t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
+      '  <td style="width:36px"></td>' +
 			'  <td style="width:65%;"><span style="background-color:' + x.color + '" id="description-' + x.id + '" class="description' + completed + ' '+darkClass+'">' + x.description + '</span>' +
 			'      <span id="editor-' + x.id + '" hidden>' +
 			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" type="text" autofocus/>' +
@@ -291,42 +226,31 @@ function display_task(x, converter) {
 				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
 				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
 				'</div>';
-	}
-	$("#task-list-" + x.list).append(t);
-	$("#current_input").val("")
-	$("body").append(popup);
+  }
+  $("#task-list-general").append(t);
+  $("#current_input").val("")
+  $("body").append(popup);
 }
 
-function get_current_tasks(day) {
-	// remove the old tasks
-	$(".task").remove();
-	var dates;
-
-	api_get_days(day, function (result) {
-		dates = result
-		console.log('Using these dates for the task')
-		console.log(dates)
-	});
-
-	// display the new task editor
-	display_task({ id: "today", list: "today" }, {})
-	display_task({ id: "tomorrow", list: "tomorrow" }, {})
-
-	// display the tasks
-	api_get_tasks(day, function (result) {
-		for (const task of result.tasks) {
-			display_task(task, dates);
-		}
-
-		// wire the response events
-		$(".description").click(complete_task)
-		$(".edit_task").click(edit_task);
-		$(".save_edit").click(save_edit);
-		$(".undo_edit").click(undo_edit);
-		$(".delete_task").click(delete_task);
-		// set all inputs to set flag
-		$("input").keypress(input_keypress);
-	});
+function get_current_tasks() {
+  // remove the old tasks
+  $(".task").remove();
+  // display the new task editor
+  display_task({id:"general", list:"general"})
+  // display the tasks
+  api_get_tasks(function(result){
+    for (const task of result.tasks) {
+      display_task(task);
+    }
+    // wire the response events
+    $(".description").click(complete_task)
+    $(".edit_task").click(edit_task);
+    $(".save_edit").click(save_edit);
+    $(".undo_edit").click(undo_edit);
+    $(".delete_task").click(delete_task);
+    // set all inputs to set flag
+    $("input").keypress(input_keypress);
+  });
 }
 
 function choose_color(id) {
@@ -345,12 +269,20 @@ function color_task(id){
 		task_id: id,
 		task_color: color
 	};
+
+  $.ajax({
+    url: "api/color_task", type: "PUT",
+    data: JSON.stringify(data),
+    contentType: "application/json; charset=utf-8",
+    success: function() {
+      console.log("colored task successfully");
+      get_current_tasks();
+    }
+  });
 }
 
-$(document).ready(function () {
-	api_get_tomorrow(function (result) {
-		get_current_tasks(result);
-	})
+$(document).ready(function() {
+  get_current_tasks()
 });
 
 </script>
