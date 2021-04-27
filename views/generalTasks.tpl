@@ -47,23 +47,6 @@
 
 
 
-/* Old Code
-<div class="w3-row">
-  <div class="w3-col s6 w3-container w3-topbar w3-bottombar w3-leftbar w3-rightbar w3-border-white">
-    <div class="w3-row w3-xxlarge w3-bottombar w3-border-black w3-margin-bottom">
-      <h1><i>General Tasks:</i></h1>
-    </div>
-    <table id="task-list-general" class="w3-table">
-    </table>
-    <div class="w3-row w3-bottombar w3-border-black w3-margin-bottom w3-margin-top"></div>
-  </div>
-</div>
-<input id="current_input" hidden value=""/>
-<script>
-*/
-
-
-
 /* API CALLS */
 
 function api_get_tasks(success_function) {

@@ -46,7 +46,7 @@
 	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
 		<a href="/remove">Delete Account</a>
 	</span>
-	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
+	<span class="w3-button w3-display-bottomleft w3-round w3-teal small-margin small-button">
 		<a href="/general">General Tasks</a>
 	</span>
 </div>
