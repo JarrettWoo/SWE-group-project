@@ -2,6 +2,7 @@
 % include("banner.tpl")
 
 <form class="w3-display-middle w3-round form" action="" method="POST">
+	<h1>Login</h1>
 	<label>Username</label>
 	<input class="w3-input" type="text" input name="un"><br>
 

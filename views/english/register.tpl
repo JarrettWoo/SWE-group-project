@@ -1,8 +1,10 @@
 % include("header.tpl")
 % include("banner.tpl")
+
 <form class="w3-display-middle w3-round form" action="" method="POST">
+	<h1>Register new account</h1>
 	<label>Username</label>
-	<input class="w3-input" type="text" name="un"><br>
+	<input class="w3-input" type="text" name="un" id="username"><br>
 
 	<label>Password</label>
 	<input class="w3-input" type="password" name="pw"><br>
