@@ -11,10 +11,10 @@ def encode_password(password):
     return hash
 
 
-""" def test_encode_password():
+def test_encode_password():
     hash = encode_password("mypassword")
     assert type(hash) is str
-    assert len(hash) > 60 """
+    assert len(hash) > 60
 
 
 def verify_password(password, hash):
@@ -26,7 +26,7 @@ def verify_password(password, hash):
     return old_hash == new_hash
 
 
-""" def test_verify_password():
+def test_verify_password():
     hash = encode_password("mypassword")
     result = verify_password("mypassword", hash)
     assert result, "Correct password does not verify"
@@ -39,11 +39,11 @@ def verify_password(password, hash):
     result = verify_password("mypassWord", hash)
     assert not result, "Incorrect password does improperly verify"
     result = verify_password("cat", hash)
-    assert not result, "Incorrect password does improperly verify" """
+    assert not result, "Incorrect password does improperly verify"
 
 
 
-#if __name__ == "__main__":
-#    test_encode_password()
-#    test_verify_password()
-#    print("Done.")
+if __name__ == "__main__":
+    test_encode_password()
+    test_verify_password()
+    print("Done.")
