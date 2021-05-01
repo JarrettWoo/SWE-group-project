@@ -48,7 +48,7 @@ def getUser():
 # A basic revision for the insertion of tasks into the tasks table. Will further revise to include functionality
 # for inserting multiple lines of tasks.
 def insert_Tasks(taskDef, status=False, dateList = '', repeatNum = 0, startDt = getdate_today(), endDt = '', col=''):
-	
+
 	# Current Revised Data Structure:
 	"""
 		time: Timestamp for when the task was written, needed for proper execution and organization of tasks
@@ -87,6 +87,7 @@ def get_tasks(dates):
 	tasks = []
 
 	for d in dates:
+		print(d)
 		year, month, day = d.split('-')
 		viewDay = datetime.datetime(int(year), int(month), int(day))
 
@@ -134,5 +135,4 @@ def get_tasks(dates):
 								viewTask['list'] = viewDay.strftime("%Y-%m-%d")
 								viewTask['id'] = viewDay.strftime("%Y-%m-%d") + '-' + str(viewTask['id'])
 								tasks.append(viewTask)
-
 	return { "tasks": tasks }

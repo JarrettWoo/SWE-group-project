@@ -150,3 +150,11 @@ select.darkmode, option.darkmode {
 .w3-btn.darkmode:hover {
 	box-shadow: 0 8px 16px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 30%);
 }
+
+.Yellow { background-color: #FFFF00; }
+.Green { background-color: #00FF00; }
+.Blue { background-color: #56CFFF; }
+
+.darkmode.Yellow { background-color: #A0A205; }
+.darkmode.Green { background-color: #02bf02; }
+.darkmode.Blue { background-color: #008ee0; }
