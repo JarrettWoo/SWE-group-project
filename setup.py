@@ -17,8 +17,8 @@ if __name__ == "__main__":
 
 	user_db = dataset.connect('sqlite:///user.db')
 	user_table = user_db.get_table('user')
-	user_table.drop()
-	user_table = user_db.create_table('user')
+	#user_table.drop()
+	#user_table = user_db.create_table('user')
 
 	session_db = dataset.connect('sqlite:///session.db')
 	session_table = session_db.get_table('session')

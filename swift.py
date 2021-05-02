@@ -440,13 +440,21 @@ def get_version():
 	return { "version":VERSION }
 
 
-@get('/api/tasks/<day>')
-def get_tasks(day):
+@get('/api/tasks/<day>/<view>')
+def get_tasks(day, view):
 	#return a list of tasks sorted by submit/modify time
 	response.headers['Content-Type'] = 'application/json'
 	response.headers['Cache-Control'] = 'no-cache'
 
-	days = [taskManager.getdate_today(), day]
+	days = []
+
+	if view == 'two_day':
+		print('Getting two_day view')
+		days = [taskManager.getdate_today(), day]
+		print(days)
+	elif view == 'seven_day':
+		days = taskManager.calc_week(day)
+
 	return taskManager.get_tasks(days)
 
 @get('/api/remember')
@@ -459,25 +467,31 @@ def update_view():
 	print(data)
 	taskManager.set_view(data)
 
-@post('/api/tasks')
-def create_task():
+@post('/api/tasks/<view>')
+def create_task(view):
 	#create a new task in the database
 	try:
 		data = request.json
+		print(data)
 		for key in data.keys():
-			assert key in ["description","list"], f"Illegal key '{key}'"
+			assert key in ["description", "list"], f"Illegal key '{key}'"
 		assert type(data['description']) is str, "Description is not a string."
 		assert len(data['description'].strip()) > 0, "Description is length zero."
-		assert data['list'] in ["today","tomorrow"], "List must be 'today' or 'tomorrow'"
 	except Exception as e:
 		response.status = "400 Bad Request:" + str(e)
 		return
 	try:
 		print("test")
-		if data['list'] == 'tomorrow':
-			data['list'] = (taskManager.get_view())['savedDate']
+		if view == 'seven_day':
+			listPos = ['one', 'two', 'three', 'four', 'five', 'six', 'seven']
+			pos = listPos.index(data['list'])
+			dates = taskManager.calc_week(taskManager.get_view()['savedDate'])
+			data['list'] = dates[pos]
 		else:
-			data['list'] = taskManager.getdate_today()
+			if data['list'] == 'today':
+				data['list'] = taskManager.getdate_today()
+			else:
+				data['list'] = taskManager.get_view()['savedDate']
 
 		taskManager.insert_Tasks(data['description'].strip(), startDt=data['list'])
 	except Exception as e:
@@ -521,10 +535,18 @@ def update_task():
 def get_tomorrow():
 	return taskManager.getdate_tomorrow(taskManager.getdate_today())
 
+@get('/api/today')
+def get_today():
+	return taskManager.getdate_today()
 
-@get('/api/get_days/<day>')
-def get_days(day):
-	days = {'today': taskManager.getdate_today(), 'tomorrow': day}
+
+@get('/api/get_days/<day>/<view>')
+def get_days(day, view):
+	days = {}
+	if view == 'two_day':
+		days = {'today': taskManager.getdate_today(), 'tomorrow': day}
+	elif view == 'seven_day':
+		days = taskManager.week_days(day)
 	return days
 
 
@@ -537,9 +559,6 @@ def delete_task():
 		response.status="400 Bad Request:"+str(e)
 		return
 	try:
-		# year, month, date, ident = data['id'].split('-')
-
-		#data['id'] = int(ident)
 		task_table = taskbook_db.get_table('task')
 		task_table.delete(id=data['id'])
 	except Exception as e:

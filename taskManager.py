@@ -25,6 +25,41 @@ def getdate_tomorrow(today):
 	return date.strftime("%Y-%m-%d")
 
 
+def week_days(day):
+	vals = calc_week(day)
+	days = {'Sunday': vals[0],
+			'Monday': vals[1],
+			'Tuesday': vals[2],
+			'Wednesday': vals[3],
+			'Thursday': vals[4],
+			'Friday': vals[5],
+			'Saturday': vals[6]}
+
+	return days
+
+
+def calc_week(date):
+	year, month, day = date.split('-')
+	date = datetime.datetime(int(year), int(month), int(day))
+
+	pos = date.isoweekday()
+	dates = []
+
+	# If the current day is Sunday, append sunday to the list and then add all other days
+	if pos == 7:
+		dates.append(date.strftime("%Y-%m-%d"))
+		for i in range(1, 7):
+			dates.append((date + timedelta(days=i)).strftime("%Y-%m-%d"))
+	else:
+		for i in range(pos, 0, -1):
+			dates.append((date - timedelta(days=i)).strftime("%Y-%m-%d"))
+
+		for i in range(pos, 7):
+			dates.append((date + timedelta(days=i - pos)).strftime("%Y-%m-%d"))
+
+	return dates
+
+
 # Getter and setter for the remembered day in view table
 def get_view():
 	date_list = [dict(x) for x in date_table.find()]
@@ -53,7 +88,7 @@ def insert_Tasks(taskDef, status=False, dateList = '', repeatNum = 0, startDt = 
 	"""
 		time: Timestamp for when the task was written, needed for proper execution and organization of tasks
 		description: Description of the task
-		list: Legacy attribute needed to proper functionality. Will remove when no longer needed.
+		list: NOT a legacy attribute. Needed to distinguish which list the task is attached to.
 		completed: Boolean variable that dictates whether or not a task is crossed out on the list
 		repeatFreq: An integer variable that dictates how often a task repeats:
 			0 --> No repeat
@@ -77,9 +112,6 @@ def insert_Tasks(taskDef, status=False, dateList = '', repeatNum = 0, startDt = 
 # Key being the word "tasks" and the value is a list of all tasks being returned
 def get_tasks(dates):
 
-	# Pulls every task out of the database into a working list
-	#tasks_list = [dict(x) for x in task_table.find()]
-
 	# Pulls tasks associated with 'user' into a working list
 	tasks_list = [dict(x) for x in task_table.find(user = getUser())]
 
@@ -88,11 +120,13 @@ def get_tasks(dates):
 
 	for d in dates:
 		print(d)
+		print(d.split('-'))
 		year, month, day = d.split('-')
 		viewDay = datetime.datetime(int(year), int(month), int(day))
 
 		for task in tasks_list:
 			viewTask = dict(task)
+			print(viewTask)
 			stYear, stMonth, stDay = viewTask['startDate'].split('-')
 			startDay = datetime.datetime(int(stYear), int(stMonth), int(stDay))
 

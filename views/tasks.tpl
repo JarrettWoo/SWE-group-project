@@ -308,6 +308,8 @@ function get_current_tasks(day) {
 		console.log(dates)
 	});
 
+	$("head.h1").html("Hello!");
+
 	// display the new task editor
 	display_task({ id: "today", list: "today" }, {})
 	display_task({ id: "tomorrow", list: "tomorrow" }, {})
