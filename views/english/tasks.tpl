@@ -162,7 +162,6 @@ function move_task(event) {
 			api_update_task({ 'id': id, 'startDate': target_date, 'list':target_list },
 
 			function (result) {
-				console.log(result);
 				api_remember_days(function(result) {
 						get_current_tasks(result['savedDate']);
 					});

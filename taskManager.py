@@ -22,6 +22,7 @@ def getdate_tomorrow(today):
 	year, month, day = today.split('-')
 	date = datetime.datetime(int(year), int(month), int(day))
 	date = date + timedelta(days=1)
+	set_view(date.strftime("%Y-%m-%d"));
 	return date.strftime("%Y-%m-%d")
 
 
@@ -119,14 +120,11 @@ def get_tasks(dates):
 	tasks = []
 
 	for d in dates:
-		print(d)
-		print(d.split('-'))
 		year, month, day = d.split('-')
 		viewDay = datetime.datetime(int(year), int(month), int(day))
 
 		for task in tasks_list:
 			viewTask = dict(task)
-			print(viewTask)
 			stYear, stMonth, stDay = viewTask['startDate'].split('-')
 			startDay = datetime.datetime(int(stYear), int(stMonth), int(stDay))
 

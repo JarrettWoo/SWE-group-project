@@ -464,7 +464,6 @@ def remember_day():
 @post('/api/study')
 def update_view():
 	data = request.json
-	print(data)
 	taskManager.set_view(data)
 
 @post('/api/tasks/<view>')
@@ -472,7 +471,6 @@ def create_task(view):
 	#create a new task in the database
 	try:
 		data = request.json
-		print(data)
 		for key in data.keys():
 			assert key in ["description", "list"], f"Illegal key '{key}'"
 		assert type(data['description']) is str, "Description is not a string."
@@ -481,7 +479,6 @@ def create_task(view):
 		response.status = "400 Bad Request:" + str(e)
 		return
 	try:
-		print("test")
 		if view == 'seven_day':
 			listPos = ['one', 'two', 'three', 'four', 'five', 'six', 'seven']
 			pos = listPos.index(data['list'])
