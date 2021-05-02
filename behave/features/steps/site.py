@@ -23,15 +23,12 @@ def step_impl(context):
         'un': 'test',
         'pw': 'test'
     }
-    context.LogIn = context.s.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
+    context.LogIn = context.s.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload, allow_redirects=False)
 
 @then(u'we are signed in')
 def step_impl(context):
-    bs = BeautifulSoup(context.LogIn.text, 'html.parser')
-    if "w3-row taskbook-container" in bs:
-        print('Pass.')
-    else:
-        print('Fail.')
+    context.LogIn = context.s.get('http://bbehnkese.pythonanywhere.com/tasks', allow_redirects=False)
+    assert(context.LogIn.status_code == 200)
 
 @given(u'we are signed in')
 def step_impl(context):
@@ -41,32 +38,30 @@ def step_impl(context):
         'pw': 'test'
     }
     r = context.session.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
-    #context.r = requests.get('http://bbehnkese.pythonanywhere.com/tasks', allow_redirects=False)
-    #assert(context.LogIn.status_code == 200)
+    r2 = context.session.get('http://bbehnkese.pythonanywhere.com/tasks', allow_redirects=False)
+    assert(r.status_code == 200)
 
 @when(u'we make a task')
 def step_impl(context):
-    context.session = HTMLSession()
-    context.payload = {
-        'un': 'test',
-        'pw': 'test'
-    }
-    r = context.session.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
-    #r2 = context.session.get('http://bbehnkese.pythonanywhere.com/tasks', verify=False)
+    #context.session = HTMLSession()
+    #context.payload = {
+    #    'un': 'test',
+    #    'pw': 'test'
+    #}
+    #r = context.session.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
     parameters = {
         'task': "test task"
     }
     payload = {
         'task': "test task"
     }
-    tt = context.session.post('http://bbehnkese.pythonanywhere.com/api/tasks', data=payload, verify=False, allow_redirects=False)
-    print(tt.text)
-    print('\n')
+    tt = context.session.post('http://bbehnkese.pythonanywhere.com/api/tasks', data=payload, allow_redirects=False)
 
 @then(u'the task is available')
 def step_impl(context):
     #raise NotImplementedError(u'STEP: Then the task is available')
-    r = context.session.get('http://bbehnkese.pythonanywhere.com/api/tasks/2021-4-9', verify=False, allow_redirects=False)
+    r = context.session.get('http://bbehnkese.pythonanywhere.com/api/tasks/2021-5-2', allow_redirects=False)
+    assert("test task" in r.text)
     #print(r.text)
     #print('\n')
 
@@ -88,6 +83,7 @@ def step_impl(context):
 @then(u'we access taskbook page')
 def step_impl(context):
     r = context.session2.get('http://3.19.37.101:8080/tasks', allow_redirects=False)
+    assert(r.status_code == 200)
 
 @then(u'we create a task')
 def step_impl(context):
@@ -99,10 +95,13 @@ def step_impl(context):
         'task': "test task"
     }
     tt = context.session2.post('http://3.19.37.101:8080/api/tasks', data=payload, verify=False, allow_redirects=False)
+    #print(tt.text)
+    #print('\n')
 
 @then(u'the lightsail task is available')
 def step_impl(context):
     #raise NotImplementedError(u'STEP: Then the lightsail task is available')
-    r = context.session2.get('http://3.19.37.101:8080/api/tasks/2021-4-9', verify=False, allow_redirects=False)
+    r = context.session2.get('http://3.19.37.101:8080/api/tasks/2021-5-7', verify=False, allow_redirects=False) #Accessing 2021-5-7 on 2021-5-1 returns the 1st's tasks
+    assert("test task" in r.text)
     #print(r.text)
     #print('\n')

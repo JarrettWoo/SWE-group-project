@@ -1,6 +1,7 @@
 % include("header.tpl")
 % include("banner.tpl")
 <form class="w3-display-middle w3-round form" action="" method="POST">
+	<h1>Delete account</h1>
 	<label>Username</label>
 	<input class="w3-input" type="text" name="un"><br>
 

@@ -135,10 +135,6 @@ def register():
 	password = request.forms.get('pw')
 	passwordConfirm = request.forms.get('pwConfirm')
 
-	# Makes sure passwords match
-	if password != passwordConfirm:
-		return redirect('/register')
-
 	session_id = request.cookies.get('session_id', None)
 	session_table = session_db.create_table('session')
 
@@ -159,12 +155,16 @@ def register():
 			"language": "english"
 		}
 
+	# Makes sure passwords match
+	if password != passwordConfirm:
+		return template(session["language"] + '/register_failureB.tpl')
+
 	#stores username and encrypted password in db
 	user_table = user_db.create_table('user')
 	# Checks if username already exists
 	for users in user_table:
 		if users['username'] == username:
-			return redirect('/register')
+			return template(session["language"] + '/register_failureA.tpl')
 
 	# Creates user profile and updates the database
 	user_profile = {
@@ -329,10 +329,10 @@ def remove():
 		return redirect('/tasks')
 
 	if passwordConfirm != password:
-		return redirect('/remove')
+		return template(session["language"] + "/remove_failureB.tpl")
 
 	if session["username"] != username or not passwords.verify_password(password, user_profile["password"]):
-		return redirect('/remove')
+		return template(session["language"] + "/remove_failureA.tpl")
 	else:
 		user_db.query("DELETE FROM user WHERE username = '" + session["username"] + "'")
 		taskbook_db.query("DELETE FROM task WHERE user = '" + session["username"] + "'")
