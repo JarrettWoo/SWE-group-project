@@ -15,13 +15,13 @@
 			<i class="cal fas fa-angle-right next"></i>
 		</div>
 		<div class="cal weekdays">
-			<div>Sun</div>
-			<div>Mon</div>
-			<div>Tue</div>
-			<div>Wed</div>
-			<div>Thu</div>
-			<div>Fri</div>
-			<div>Sat</div>
+			<div>रवि</div>
+			<div>सोम</div>
+			<div>मंगल</div>
+			<div>बुध</div>
+			<div>गुरु</div>
+			<div>शुक्र</div>
+			<div>शनि</div>
 		</div>
 		<div class="cal days"></div>
 	</div>
@@ -68,18 +68,18 @@
 		).getDay();
 		const nextDays = 7 - lastDayIndex - 1;
 		const months = [
-			"January",
-			"February",
-			"March",
-			"April",
-			"May",
-			"June",
-			"July",
-			"August",
-			"September",
-			"October",
-			"November",
-			"December",
+			"जनवरी",
+			"फ़रवरी",
+			"मार्च",
+			"अप्रैल",
+			"मई",
+			"जून",
+			"जुलाई",
+			"अगस्त",
+			"सितंबर",
+			"अक्टूबर",
+			"नवंबर",
+			"दिसंबर",
 		];
 		document.querySelector(".date h1").innerHTML = months[date.getMonth()];
 		document.querySelector(".date p").innerHTML = new Date().toDateString();

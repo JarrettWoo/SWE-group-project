@@ -1,5 +1,5 @@
-% include("header.tpl")
-% include("banner.tpl")
+% include("Hindi/header.tpl")
+% include("Hindi/banner.tpl")
 
 <style>
   .save_edit, .undo_edit, .description, .edit_task, .delete_task, .choose_color {
@@ -7,13 +7,12 @@
   }
   .completed {text-decoration: line-through;}
   .description { padding-left:8px }
-
 </style>
 
 <div class="w3-row taskbook-container">
 	<div class="w3-half w3-container s6" id="left-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
-			<h1 class="title">General Tasks:</h1>
+			<h1 class="title">आम कार्य:</h1>
 		</div>
 			<table id="task-list-general" class="w3-table">
 			</table>
@@ -21,20 +20,18 @@
 	</div>
 	<!-- <div class="stripe">&nbsp;</div> -->
 	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
-		<a href="/remove">Delete Account</a>
+		<a href="/remove">खाता हटाए</a>
 	</span>
   <span class="w3-button w3-display-bottomleft w3-round w3-teal small-margin small-button">
-		<a href="/tasks">Task List</a>
+		<a href="/tasks">कार् सूची</a>
 	</span>
 </div>
 <input id="current_input" hidden value="" />
 <script src="static/tests.js"></script>
 <script>
-
 	let darkmode = false;
 	$("#darkModeBtn").click(function() {
 		darkmode = !darkmode;
-
 		if (darkmode === true) {
 			//this nonsense just loops through the entire DOM
 			$($("*").get().reverse()).each(function(index) {
@@ -47,16 +44,11 @@
 			})
 		}
 	})
-
-
-
 /* API CALLS */
-
 function api_get_tasks(success_function) {
   $.ajax({url:"api/tasks-gen", type:"GET",
           success:success_function});
 }
-
 function api_create_task(task, success_function) {
   console.log("creating task with:", task)
   $.ajax({url:"api/tasks-gen", type:"POST",
@@ -64,7 +56,6 @@ function api_create_task(task, success_function) {
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
-
 function api_update_task(task, success_function) {
   console.log("updating task with:", task)
   task.id = parseInt(task.id)
@@ -73,7 +64,6 @@ function api_update_task(task, success_function) {
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
-
 function api_delete_task(task, success_function) {
   console.log("deleting task with:", task)
   task.id = parseInt(task.id)
@@ -82,9 +72,7 @@ function api_delete_task(task, success_function) {
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
-
 /* KEYPRESS MONITOR */
-
 function input_keypress(event) {
   if (event.target.id != "current_input") {
     $("#current_input").val(event.target.id)
@@ -94,9 +82,6 @@ function input_keypress(event) {
   $("#save_edit-"+id).prop('hidden', false);
   $("#undo_edit-"+id).prop('hidden', false);
 }
-
-
-
 function complete_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("complete item", event.target.id )
@@ -109,7 +94,6 @@ function complete_task(event) {
                     get_current_tasks();
                   } );
 }
-
 function edit_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("edit item", event.target.id)
@@ -127,7 +111,6 @@ function edit_task(event) {
   // set the editing flag
   $("#current_input").val(event.target.id)
 }
-
 function save_edit(event) {
   console.log("save item", event.target.id)
   id = event.target.id.replace("save_edit-","");
@@ -148,7 +131,6 @@ function save_edit(event) {
                     } );
   }
 }
-
 function undo_edit(event) {
   id = event.target.id.replace("undo_edit-","")
   console.log("undo",[id])
@@ -167,7 +149,6 @@ function undo_edit(event) {
   // set the editing flag
   $("#current_input").val("")
 }
-
 function delete_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("delete item", event.target.id )
@@ -178,25 +159,23 @@ function delete_task(event) {
                     get_current_tasks();
                   } );
 }
-
 function display_task(x) {
   let popup = "";
 	let darkClass = "";
 	if (darkmode) { darkClass = "darkmode"; }
-
   completed = x.completed ? " completed" : "";
   if ((x.id == "general")) {
       t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
     			'  <td style="width:36px"></td>' +
     			'  <td><span id="editor-' + x.id + '">' +
     			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" ' +
-    			'          type="text" autofocus placeholder="Add an item..."/>' +
+    			'          type="text" autofocus placeholder="कार्य जोड़े..."/>' +
     			'      </span>' +
     			'  </td>' +
     			'  <td style="width:72px">' +
     			// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
-    			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">Add</span>' +
-    			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
+    			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">जोड़े</span>' +
+    			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">रद्द करें</span>' +
     			'  </td>' +
     			'</tr>';
   } else {
@@ -219,9 +198,9 @@ function display_task(x) {
 		popup = '<div id="dropdown-'+x.id+'" class="dropdown '+darkClass+'">' +
 				'	<h3>Select highlight color:</h3>' +
 				'	<select id="selColor-'+x.id+'" class="'+darkClass+'">' +
-				'		<option value="Yellow" class="'+darkClass+'">Yellow</option>' +
-				'		<option value="Green" class="'+darkClass+'">Green</option>' +
-				'		<option value="Blue" class="'+darkClass+'">Blue</option>' +
+				'		<option value="Yellow" class="'+darkClass+'">पीला</option>' +
+				'		<option value="Green" class="'+darkClass+'">हरा</option>' +
+				'		<option value="Blue" class="'+darkClass+'">नीला</option>' +
 				'	</select><br>' +
 				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
 				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
@@ -231,7 +210,6 @@ function display_task(x) {
   $("#current_input").val("")
   $("body").append(popup);
 }
-
 function get_current_tasks() {
   // remove the old tasks
   $(".task").remove();
@@ -252,7 +230,6 @@ function get_current_tasks() {
     $("input").keypress(input_keypress);
   });
 }
-
 function choose_color(id) {
 	const colSelect = document.getElementById("dropdown-"+id);
 	colSelect.style.display = "block";
@@ -264,12 +241,10 @@ function close_popup(id) {
 function color_task(id){
 	const selColor = document.getElementById("selColor-" + id);
 	const color = selColor.value;
-
 	const data = {
 		task_id: id,
 		task_color: color
 	};
-
   $.ajax({
     url: "api/color_task", type: "PUT",
     data: JSON.stringify(data),
@@ -280,10 +255,8 @@ function color_task(id){
     }
   });
 }
-
 $(document).ready(function() {
   get_current_tasks()
 });
-
 </script>
-% include("footer.tpl")
+% include("Hindi/footer.tpl")

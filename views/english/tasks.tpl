@@ -1,7 +1,7 @@
-% include("header.tpl")
-% include("banner.tpl")
+% include("english/header.tpl")
+% include("english/banner.tpl")
 
-% include("Calendar.tpl")
+% include("english/Calendar.tpl")
 
 <style>
 	.save_edit,
@@ -435,4 +435,4 @@ $(document).ready(function () {
 });
 
 </script>
-% include("footer.tpl")
+% include("english/footer.tpl")

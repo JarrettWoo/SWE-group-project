@@ -242,6 +242,24 @@ def login():
 	return redirect('/tasks')
 
 
+@route("/week")
+def week_tpl():
+	session_id = request.cookies.get('session_id', None)
+	session_table = session_db.create_table('session')
+	sessions = list(session_table.find(session_id = session_id))
+	if len(sessions) == 0:  # need to make a session
+		session = {
+			"session_id":session_id,
+			"started_at":time.time(),
+			"username": None,
+			"language": "english"
+		}
+		session_table.insert(session)  # put session into database
+	else:
+		session = sessions[0]
+	return template(session["language"] + "/week_tasks.tpl")
+
+
 @route("/logout")
 def logout():
 	session_id = request.cookies.get('session_id', None)
@@ -423,7 +441,22 @@ def hindi():
 
 @route('/general')
 def general():
-    return template("generalTasks.tpl")
+	session_id = request.cookies.get('session_id', None)
+	session_table = session_db.create_table('session')
+	sessions = list(session_table.find(session_id = session_id))
+	if len(sessions) == 0:  # need to make a session
+		session = {
+			"session_id":session_id,
+			"started_at":time.time(),
+			"username": None,
+			"language": "english"
+		}
+		session_table.insert(session)  # put session into database
+	else:
+		session = sessions[0]
+		
+	return template(session["language"] + "/generalTasks.tpl")
+	
 
 # ---------------------------
 # task REST api
