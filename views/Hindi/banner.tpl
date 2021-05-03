@@ -11,11 +11,11 @@
 		}
 	</script>
 	<span class="w3-display-topright">
-		<a class="w3-button w3-round w3-teal small-margin small-button" href="/register">Sign up</a>
-		<a class="w3-button w3-round w3-teal small-margin small-button" href="/login">Log In</a>
-		<a class="w3-button w3-round w3-teal small-margin small-button" href="/logout">Log Out</a>
-		<button id="darkModeBtn" class="w3-button w3-round w3-gray small-margin small-button">Dark Mode</button>
-		<button id="calBtn" class="w3-button w3-round w3-gray small-margin small-button">Calendar</button>
+		<a class="w3-button w3-round w3-teal small-margin small-button" href="/register">साइन अप करें</a>
+		<a class="w3-button w3-round w3-teal small-margin small-button" href="/login">लॉग इन करें</a>
+		<a class="w3-button w3-round w3-teal small-margin small-button" href="/logout">लॉग आउट</a>
+		<button id="darkModeBtn" class="w3-button w3-round w3-gray small-margin small-button">डार्क मोड</button>
+		<button id="calBtn" class="w3-button w3-round w3-gray small-margin small-button">पंचांग</button>
 		<span class="w3-container">
 			<div class="w3-dropdown-hover">
 				<a class="w3-button w3-gray small-margin small-button">English</a>
