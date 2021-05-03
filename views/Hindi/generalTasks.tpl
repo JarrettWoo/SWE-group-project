@@ -1,5 +1,5 @@
-% include("Hindi/header.tpl")
-% include("Hindi/banner.tpl")
+% include("hindi/header.tpl")
+% include("hindi/banner.tpl")
 
 <style>
   .save_edit, .undo_edit, .description, .edit_task, .delete_task, .choose_color {
@@ -259,4 +259,4 @@ $(document).ready(function() {
   get_current_tasks()
 });
 </script>
-% include("Hindi/footer.tpl")
+% include("hindi/footer.tpl")

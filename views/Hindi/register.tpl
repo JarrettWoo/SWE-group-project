@@ -1,5 +1,5 @@
-% include("Hindi/header.tpl")
-% include("Hindi/banner.tpl")
+% include("hindi/header.tpl")
+% include("hindi/banner.tpl")
 
 <form class="w3-display-middle w3-round form" action="" method="POST">
 	<h1>नया खाता रजिस्टर करें</h1>
@@ -15,4 +15,4 @@
 	<button type="Submit" class="w3-button w3-round w3-teal">प्रस्तुत</button>
 </form>
 
-% include("Hindi/footer.tpl")
+% include("hindi/footer.tpl")

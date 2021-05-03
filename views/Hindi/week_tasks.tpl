@@ -1,7 +1,7 @@
-% include("Hindi/header.tpl")
-% include("Hindi/banner.tpl")
+% include("hindi/header.tpl")
+% include("hindi/banner.tpl")
 
-% include("Hindi/Calendar.tpl")
+% include("hindi/Calendar.tpl")
 
 <style>
 	.save_edit,
@@ -428,4 +428,4 @@ $(document).ready(function () {
 	})
 });
 </script>
-% include("Hindi/footer.tpl")
+% include("hindi/footer.tpl")

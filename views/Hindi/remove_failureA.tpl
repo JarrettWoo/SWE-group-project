@@ -1,5 +1,5 @@
-% include("Hindi/header.tpl")
-% include("Hindi/banner.tpl")
+% include("hindi/header.tpl")
+% include("hindi/banner.tpl")
 
 <style>
 p {color:red;}
@@ -18,4 +18,4 @@ p {color:red;}
 
 	<button type="Submit" class="w3-button w3-round w3-teal">प्रस्तुत</button>
 </form>
-% include("Hindi/footer.tpl")
+% include("hindi/footer.tpl")
