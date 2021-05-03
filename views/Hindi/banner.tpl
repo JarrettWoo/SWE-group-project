@@ -1,7 +1,7 @@
 <div class="w3-container w3-center">
 	<br>
 	<br>
-	<span class="w3-xxxlarge w3-margin"><b>My Taskbook</b></span>
+	<span class="w3-xxxlarge w3-margin"><b>मेरी कार्यपुस्तिका</b></span>
 	<span class="w3-display-topleft">
 		<a class="w3-button w3-round w3-teal small-margin small-button" onclick="removeCompletedTasks()"> 
 		 पूरा किया हुआ कार्य </a>
