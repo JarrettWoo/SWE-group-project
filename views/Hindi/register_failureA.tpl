@@ -6,7 +6,7 @@ p {color:red;}
 </style>
 
 <form class="w3-display-middle w3-round form" action="" method="POST">
-	<h1>Register new account</h1> <p>उपयोगकर्ता नाम पहले से ही लिया जा चुका है!</p>
+	<h1>नया खाता रजिस्टर करें</h1> <p>उपयोगकर्ता नाम पहले से ही लिया जा चुका है!</p>
 	<label>उपयोगकर्ता नाम</label>
 	<input class="w3-input" type="text" name="un" id="username"><br>
 
