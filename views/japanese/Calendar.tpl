@@ -15,13 +15,13 @@
 			<i class="cal fas fa-angle-right next"></i>
 		</div>
 		<div class="cal weekdays">
-			<div>Sun</div>
-			<div>Mon</div>
-			<div>Tue</div>
-			<div>Wed</div>
-			<div>Thu</div>
-			<div>Fri</div>
-			<div>Sat</div>
+			<div>日</div>
+			<div>月</div>
+			<div>火</div>
+			<div>水</div>
+			<div>木</div>
+			<div>金</div>
+			<div>土</div>
 		</div>
 		<div class="cal days"></div>
 	</div>
@@ -68,18 +68,18 @@
 		).getDay();
 		const nextDays = 7 - lastDayIndex - 1;
 		const months = [
-			"January",
-			"February",
-			"March",
-			"April",
-			"May",
-			"June",
-			"July",
-			"August",
-			"September",
-			"October",
-			"November",
-			"December",
+			"1月",
+			"2月",
+			"3月",
+			"4月",
+			"5月",
+			"6月",
+			"7月",
+			"8月",
+			"9月",
+			"10月",
+			"11月",
+			"12月",
 		];
 		document.querySelector(".date h1").innerHTML = months[date.getMonth()];
 		document.querySelector(".date p").innerHTML = new Date().toDateString();

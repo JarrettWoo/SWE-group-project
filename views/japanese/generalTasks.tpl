@@ -1,5 +1,5 @@
-% include("header.tpl")
-% include("banner.tpl")
+% include("japanese/header.tpl")
+% include("japanese/banner.tpl")
 
 <style>
   .save_edit, .undo_edit, .description, .edit_task, .delete_task, .choose_color {
@@ -13,7 +13,7 @@
 <div class="w3-row taskbook-container">
 	<div class="w3-half w3-container s6" id="left-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
-			<h1 class="title">General Tasks:</h1>
+			<h1 class="title">一般的なタスク:</h1>
 		</div>
 			<table id="task-list-general" class="w3-table">
 			</table>
@@ -21,10 +21,10 @@
 	</div>
 	<!-- <div class="stripe">&nbsp;</div> -->
 	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
-		<a href="/remove">Delete Account</a>
+		<a href="/remove">アカウントを消す</a>
 	</span>
   <span class="w3-button w3-display-bottomleft w3-round w3-teal small-margin small-button">
-		<a href="/tasks">Task List</a>
+		<a href="/tasks">タスクリスト</a>
 	</span>
 </div>
 <input id="current_input" hidden value="" />
@@ -190,12 +190,12 @@ function display_task(x) {
     			'  <td style="width:36px"></td>' +
     			'  <td><span id="editor-' + x.id + '">' +
     			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" ' +
-    			'          type="text" autofocus placeholder="Add an item..."/>' +
+    			'          type="text" autofocus placeholder="アイテムを追加..."/>' +
     			'      </span>' +
     			'  </td>' +
     			'  <td style="width:72px">' +
     			// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
-    			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">Add</span>' +
+    			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">追加</span>' +
     			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
     			'  </td>' +
     			'</tr>';
@@ -286,4 +286,4 @@ $(document).ready(function() {
 });
 
 </script>
-% include("footer.tpl")
+% include("japanese/footer.tpl")

@@ -23,36 +23,91 @@
 	}
 </style>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
+
 <div class="w3-row taskbook-container">
-	<div class="w3-half w3-container s6" id="left-container">
+	<div class="w3-col w3-container" style="width:14.28%" id="One-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
-			<h1 class="title">今日</h1>
+			<h1 id="one-title" class="title">Day 1</h1>
 		</div>
-		<div id="leftTasks">
-			<table id="task-list-today" class="w3-table">
+		<div id="Tasks_1">
+			<table id="task-list-one" class="w3-table">
 			</table>
 			<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
 		</div>
 	</div>
 	<!-- <div class="stripe">&nbsp;</div> -->
-	<div class="w3-half s6 w3-container" id="right-container">
+	<div class="w3-col w3-container" style="width:14.28%" id="Two-container">
 		<div class="w3-row w3-xxlarge  w3-margin-bottom">
-			<h1 class="title" id="tomorrow-title">明日</h1>
+			<h1 id="two-title" class="title">Day 2</h1>
 		</div>
-		<div id="rightTasks">
-			<table id="task-list-tomorrow" class="w3-table">
+		<div id="Tasks_2">
+			<table id="task-list-two" class="w3-table">
 			</table>
 			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 		</div>
 	</div>
-	<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
+        	<div class="w3-col w3-container" style="width:14.28%" id="Three-container">
+		<div class="w3-row w3-xxlarge w3-margin-bottom">
+			<h1 id="three-title" class="title">Day 3</h1>
+		</div>
+		<div id="Tasks_3">
+			<table id="task-list-three" class="w3-table">
+			</table>
+			<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
+		</div>
+	</div>
+	<!-- <div class="stripe">&nbsp;</div> -->
+	<div class="w3-col w3-container" style="width:14.28%" id="Four-container">
+		<div class="w3-row w3-xxlarge  w3-margin-bottom">
+			<h1 id="four-title" class="title">Day 4</h1>
+		</div>
+		<div id="Tasks_4">
+			<table id="task-list-four" class="w3-table">
+			</table>
+			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
+		</div>
+	</div>
+    	<div class="w3-col w3-container" style="width:14.28%" id="Five-container">
+		<div class="w3-row w3-xxlarge w3-margin-bottom">
+			<h1 id="five-title" class="title">Day 5</h1>
+		</div>
+		<div id="Tasks_5">
+			<table id="task-list-five" class="w3-table">
+			</table>
+			<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
+		</div>
+	</div>
+	<!-- <div class="stripe">&nbsp;</div> -->
+	<div class="w3-col w3-container" style="width:14.28%" id="Six-container">
+		<div class="w3-row w3-xxlarge  w3-margin-bottom">
+			<h1 id="six-title" class="title">Day 6</h1>
+		</div>
+		<div id="Tasks_6">
+			<table id="task-list-six" class="w3-table">
+			</table>
+			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
+		</div>
+	</div>
+        	<div class="w3-col w3-container" style="width:14.28%" id="Seven-container">
+		<div class="w3-row w3-xxlarge w3-margin-bottom">
+			<h1 id="seven-title" class="title">Day 7</h1>
+		</div>
+		<div id="Tasks_7">
+			<table id="task-list-seven" class="w3-table">
+			</table>
+			<div class="w3-row  w3-margin-bottom w3-margin-top"></div>
+		</div>
+	</div>
+<span class="w3-button w3-display-bottomright w3-round w3-teal small-margin small-button">
 		<a href="/remove">アカウントを消す</a>
 	</span>
 	<span class="w3-button w3-display-bottomleft w3-round w3-teal small-margin small-button">
 		<a href="/general">一般的なタスク</a>
 	</span>
 </div>
-
 <input id="current_input" hidden value="" />
 <script src="static/tests.js"></script>
 <script>
@@ -77,7 +132,7 @@
 /* API CALLS */
 
 function api_get_tasks(day, success_function) {
-  var path = 'api/tasks/' + day + '/two_day'
+  var path = 'api/tasks/' + day + '/seven_day'
   $.ajax({url:path, type:"GET",
           success:success_function});
 }
@@ -85,7 +140,7 @@ function api_get_tasks(day, success_function) {
 function api_get_days(day, success_function) {
   var path = 'api/get_days/'
   path += day
-  path += '/two_day'
+  path += '/seven_day'
   $.ajax({url:path, type:"GET",
           success:success_function});
 }
@@ -102,33 +157,31 @@ function api_new_day(date) {
             contentType:"application/json; charset=utf-8"});
 }
 
-function api_get_tomorrow(success_function) {
-    $.ajax({url:"api/tomorrow", type:"GET",
+function api_get_today(success_function) {
+    $.ajax({url:"api/today", type:"GET",
             success:success_function});
 }
 
 function api_create_task(task, success_function) {
-	console.log("creating task with:", task);
-	$.ajax({
-		url: "api/tasks/two_day", type: "POST",
-		data: JSON.stringify(task),
-		contentType: "application/json; charset=utf-8",
-		success: success_function
-	});
+  console.log("creating task with:", task)
+  $.ajax({url:"api/tasks/seven_day", type:"POST",
+          data:JSON.stringify(task),
+          contentType:"application/json; charset=utf-8",
+          success:success_function});
 }
 
 function api_update_task(task, success_function) {
   console.log("updating task with:", task)
-  $.ajax({url:"api/tasks", type:"PUT", 
-          data:JSON.stringify(task), 
+  $.ajax({url:"api/tasks", type:"PUT",
+          data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
 
 function api_delete_task(task, success_function) {
   console.log("deleting task with:", task)
-  $.ajax({url:"api/tasks", type:"DELETE", 
-          data:JSON.stringify(task), 
+  $.ajax({url:"api/tasks", type:"DELETE",
+          data:JSON.stringify(task),
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
@@ -147,44 +200,14 @@ function input_keypress(event) {
 
 /* EVENT HANDLERS */
 
-function move_task(event) {
-	if ($("#current_input").val() != "") { return }
-	console.log("move item", event.target.id)
-	id = event.target.id.replace("move_task-", "");
-
-	let dates;
-	api_remember_days(function(result) {
-		api_get_days(result['savedDate'], function(getdays_result) {
-			dates = getdays_result;
-
-			const target_list = event.target.className.search("today") > 0 ? "tomorrow" : "today";
-			const target_date = dates[target_list];
-
-			api_update_task({ 'id': id, 'startDate': target_date, 'list':target_list },
-
-			function (result) {
-				api_remember_days(function(result) {
-						get_current_tasks(result['savedDate']);
-					});
-			});
-		});
-	});
-
-	// target_list = event.target.className.search("today") > 0 ? "tomorrow" : "today";
-	// api_update_task({ 'id': id, 'list': target_list },
-
-
-}
-
-
 function complete_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("complete item", event.target.id )
   id = event.target.id.replace("description-","");
   completed = event.target.className.search("completed") > 0;
   console.log("updating :",{'id':id, 'completed':completed==false})
-  api_update_task({'id':id, 'completed':completed==false}, 
-                  function(result) { 
+  api_update_task({'id':id, 'completed':completed==false},
+                  function(result) {
                     console.log(result);
                     api_remember_days(function(result) {
                         get_current_tasks(result['savedDate']);
@@ -199,7 +222,6 @@ function edit_task(event) {
   // move the text to the input editor
   $("#input-"+id).val($("#description-"+id).text());
   // hide the text display
-  $("#move_task-"+id).prop('hidden', true);
   $("#description-"+id).prop('hidden', true);
   $("#edit_task-"+id).prop('hidden', true);
   $("#delete_task-"+id).prop('hidden', true);
@@ -212,43 +234,36 @@ function edit_task(event) {
 }
 
 function save_edit(event) {
-	console.log("save item", event.target.id)
-	id = event.target.id.replace("save_edit-", "");
-	console.log("desc to save = ", $("#input-" + id).val())
-
-	if ($("#input-" + id).val() != "") {
-		if ((id != "today") & (id != "tomorrow")) {
-			api_update_task({ 'id': id, description: $("#input-" + id).val() },
-				function (result) {
-					console.log(result);
-					api_remember_days(function (result) {
-						get_current_tasks(result['savedDate']);
-					});
-					$("#current_input").val("")
-				});
-		} 
-		else {
-			
-			api_create_task({description: $("#input-" + id).val(), list: id},
-				function (result) {
-					console.log("t", result);
-					api_remember_days(function (result) {
-						get_current_tasks(result['savedDate']);
-					});
-					$("#current_input").val("")
-				});
-		}
-	}
-	else {
-		$("#input-" + id).addClass("error");
-	}
+  console.log("save item", event.target.id)
+  id = event.target.id.replace("save_edit-","");
+  console.log("desc to save = ",$("#input-" + id).val())
+  if ((id != "one") & (id != "two") & (id != "three") & (id != "four") & (id != "five") & (id != "six") & (id != "seven")) {
+    api_update_task({'id':id, description:$("#input-" + id).val()},
+                    function(result) {
+                      console.log(result);
+                      api_remember_days(function(result) {
+                        get_current_tasks(result['savedDate']);
+                    });
+                      $("#current_input").val("")
+                    } );
+  } else {
+    api_create_task({description:$("#input-" + id).val(), list:id},
+                    function(result) {
+                      console.log(result);
+                      api_remember_days(function(result) {
+                        get_current_tasks(result['savedDate']);
+                    });
+                      $("#current_input").val("")
+                    } );
+  }
 }
 
 function undo_edit(event) {
+  console.log(event)
   id = event.target.id.replace("undo_edit-","")
   console.log("undo",[id])
   $("#input-" + id).val("");
-  if ((id != "today") & (id != "tomorrow")) {
+  if ((id != "one") & (id != "two") & (id != "three") & (id != "four") & (id != "five") & (id != "six") & (id != "seven")) {
     // hide the editor
     $("#editor-"+id).prop('hidden', true);
     $("#save_edit-"+id).prop('hidden', true);
@@ -269,9 +284,10 @@ function delete_task(event) {
   console.log("delete item", event.target.id )
   id = event.target.id.replace("delete_task-","");
   api_delete_task({'id':id},
-                  function(result) { 
+                  function(result) {
                     console.log(result);
                     api_remember_days(function(result) {
+                        console.log(result)
                         get_current_tasks(result['savedDate']);
                     });
                   } );
@@ -284,31 +300,45 @@ function display_task(x, converter) {
 
 	arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
 	completed = x.completed ? " completed" : "";
-	if ((x.id == "today") || (x.id == "tomorrow")) {
+	if ((x.id == "one") || (x.id == "two") || (x.id == "three") || (x.id == "four") || (x.id == "five") || (x.id == "six") || (x.id == "seven")) {
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
 			'  <td style="width:36px"></td>' +
 			'  <td><span id="editor-' + x.id + '">' +
 			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" ' +
-			'          type="text" autofocus placeholder="アイテムを追加..."/>' +
+			'          type="text" autofocus placeholder="Add an item..."/>' +
 			'      </span>' +
 			'  </td>' +
 			'  <td style="width:72px">' +
 			// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
-			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">追加</span>' +
+			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">Add</span>' +
 			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
 			'  </td>' +
 			'</tr>';
 	} else {
-		console.log("id:" + x.id)
-		//console.log(converter)
+		console.log(x)
+		console.log(converter)
 
-		if ((x.list == converter['today'])) {
-			x.list = 'today'
-		} 
-		else {
-			x.list = 'tomorrow'
+		if ((x.list == converter['Sunday'])) {
+			x.list = 'one'
 		}
-		arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
+		else if ((x.list == converter['Monday'])){
+			x.list = 'two'
+		}
+		else if ((x.list == converter['Tuesday'])) {
+		    x.list = 'three'
+		}
+		else if ((x.list == converter['Wednesday'])) {
+		    x.list = 'four'
+		}
+		else if ((x.list == converter['Thursday'])) {
+		    x.list = 'five'
+		}
+		else if ((x.list == converter['Friday'])) {
+		    x.list = 'six'
+		}
+		else if ((x.list == converter['Saturday'])) {
+		    x.list = 'seven'
+		}
 
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
 			'  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons '+darkClass+'">' + arrow + '</span></td>' +
@@ -341,6 +371,7 @@ function display_task(x, converter) {
 	$("body").append(popup);
 }
 
+
 function get_current_tasks(day) {
 	// remove the old tasks
 	$(".task").remove();
@@ -350,13 +381,25 @@ function get_current_tasks(day) {
 		dates = result
 		console.log('Using these dates for the task')
 		console.log(dates)
+		// Changes the title of the days to be the date represented
+	    document.getElementById("one-title").innerHTML = dates['Sunday'];
+	    document.getElementById("two-title").innerHTML = dates['Monday'];
+	    document.getElementById("three-title").innerHTML = dates['Tuesday'];
+	    document.getElementById("four-title").innerHTML = dates['Wednesday'];
+	    document.getElementById("five-title").innerHTML = dates['Thursday'];
+	    document.getElementById("six-title").innerHTML = dates['Friday'];
+	    document.getElementById("seven-title").innerHTML = dates['Saturday'];
 	});
 
-	document.getElementById("tomorrow-title").innerHTML = day;
-
 	// display the new task editor
-	display_task({ id: "today", list: "today" }, {})
-	display_task({ id: "tomorrow", list: "tomorrow" }, {})
+	display_task({ id: "one", list: "one" }, {})
+	display_task({ id: "two", list: "two" }, {})
+	display_task({ id: "three", list: "three" }, {})
+	display_task({ id: "four", list: "four" }, {})
+	display_task({ id: "five", list: "five" }, {})
+	display_task({ id: "six", list: "six" }, {})
+	display_task({ id: "seven", list: "seven" }, {})
+
 
 	// display the tasks
 	api_get_tasks(day, function (result) {
@@ -365,7 +408,6 @@ function get_current_tasks(day) {
 		}
 
 		// wire the response events
-		$(".move_task").click(move_task);
 		$(".description").click(complete_task)
 		$(".edit_task").click(edit_task);
 		$(".save_edit").click(save_edit);
@@ -387,7 +429,7 @@ function close_popup(id) {
 function color_task(id){
 	const selColor = document.getElementById("selColor-" + id);
 	const color = selColor.value;
-	
+
 	const data = {
 		task_id: id,
 		task_color: color
@@ -416,8 +458,10 @@ $("#calBtn").click(function() {
 	}
 });
 
+
 $(document).ready(function () {
-	api_get_tomorrow(function (result) {
+	api_get_today(function (result) {
+	    api_new_day(result);
 		get_current_tasks(result);
 	})
 });

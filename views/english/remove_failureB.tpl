@@ -1,5 +1,5 @@
-% include("header.tpl")
-% include("banner.tpl")
+% include("english/header.tpl")
+% include("english/banner.tpl")
 
 <style>
 p {color:red;}
@@ -18,4 +18,4 @@ p {color:red;}
 
 	<button type="Submit" class="w3-button w3-round w3-teal">Submit</button>
 </form>
-% include("footer.tpl")
+% include("english/footer.tpl")

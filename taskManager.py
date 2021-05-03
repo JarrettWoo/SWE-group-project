@@ -22,7 +22,7 @@ def getdate_tomorrow(today):
 	year, month, day = today.split('-')
 	date = datetime.datetime(int(year), int(month), int(day))
 	date = date + timedelta(days=1)
-	set_view(date.strftime("%Y-%m-%d"));
+	set_view(date.strftime("%Y-%m-%d"))
 	return date.strftime("%Y-%m-%d")
 
 

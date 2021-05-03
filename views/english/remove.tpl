@@ -1,5 +1,5 @@
-% include("header.tpl")
-% include("banner.tpl")
+% include("english/header.tpl")
+% include("english/banner.tpl")
 <form class="w3-display-middle w3-round form" action="" method="POST">
 	<h1>Delete account</h1>
 	<label>Username</label>
@@ -13,4 +13,4 @@
 
 	<button type="Submit" class="w3-button w3-round w3-teal">Submit</button>
 </form>
-% include("footer.tpl")
+% include("english/footer.tpl")
