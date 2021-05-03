@@ -20,8 +20,8 @@ def step_impl(context):
 def step_impl(context):
     context.s = requests.Session()
     context.payload = {
-        'un': 'test',
-        'pw': 'test'
+        'un': 'test2',
+        'pw': 'test2'
     }
     context.LogIn = context.s.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload, allow_redirects=False)
 
@@ -34,8 +34,8 @@ def step_impl(context):
 def step_impl(context):
     context.session = HTMLSession()
     context.payload = {
-        'un': 'test',
-        'pw': 'test'
+        'un': 'test2',
+        'pw': 'test2'
     }
     r = context.session.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
     r2 = context.session.get('http://bbehnkese.pythonanywhere.com/tasks', allow_redirects=False)
@@ -49,18 +49,16 @@ def step_impl(context):
     #    'pw': 'test'
     #}
     #r = context.session.post('http://bbehnkese.pythonanywhere.com/login', data=context.payload)
-    parameters = {
-        'task': "test task"
-    }
-    payload = {
-        'task': "test task"
-    }
-    tt = context.session.post('http://bbehnkese.pythonanywhere.com/api/tasks', data=payload, allow_redirects=False)
+    parameters = "test task"
+    payload = {"tasks": [{"user": "test2", "description": "test task"}]}
+    tt = context.session.post('http://bbehnkese.pythonanywhere.com/api/tasks/two_day', data=payload, json=payload, allow_redirects=False)
+    #print(tt.text)
+    #print('\n')
 
 @then(u'the task is available')
 def step_impl(context):
     #raise NotImplementedError(u'STEP: Then the task is available')
-    r = context.session.get('http://bbehnkese.pythonanywhere.com/api/tasks/2021-5-2', allow_redirects=False)
+    r = context.session.get('http://bbehnkese.pythonanywhere.com/api/tasks/2021-5-3/two_day', allow_redirects=False)
     assert("test task" in r.text)
     #print(r.text)
     #print('\n')
