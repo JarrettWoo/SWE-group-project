@@ -1,4 +1,4 @@
-% include("hindi/header.tpl")
+% include("Hindi/header.tpl")
 % include("Hindi/banner.tpl")
 
 <form class="w3-display-middle w3-round form" action="" method="POST">
