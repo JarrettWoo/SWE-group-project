@@ -223,8 +223,8 @@ function display_task(x) {
 				'		<option value="Green" class="'+darkClass+'">緑</option>' +
 				'		<option value="Blue" class="'+darkClass+'">青</option>' +
 				'	</select><br>' +
-				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
-				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
+				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="確認" onclick="color_task('+x.id+')"/>' +
+				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="終了" onclick="close_popup('+x.id+')"/>' +
 				'</div>';
   }
   $("#task-list-general").append(t);

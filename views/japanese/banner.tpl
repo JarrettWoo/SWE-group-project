@@ -6,10 +6,6 @@
 		<a class="w3-button w3-round w3-teal small-margin small-button" onclick="removeCompletedTasks()"> 
 		終わったアイテムを消す </a>
 	</span>
-	<script> function removeCompletedTasks(){
-		
-		}
-	</script>
 	<span class="w3-display-topright">
 		<a class="w3-button w3-round w3-teal small-margin small-button" href="/register">アカウントを作成</a>
 		<a class="w3-button w3-round w3-teal small-margin small-button" href="/login">ログイン</a>

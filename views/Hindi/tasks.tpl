@@ -1,7 +1,7 @@
-% include("Hindi/header.tpl")
-% include("Hindi/banner.tpl")
+% include("hindi/header.tpl")
+% include("hindi/banner.tpl")
 
-% include("Hindi/Calendar.tpl")
+% include("hindi/Calendar.tpl")
 
 <style>
 	.save_edit,
@@ -13,9 +13,11 @@
 	.choose_color {
 		cursor: pointer;
 	}
+
 	.completed {
 		text-decoration: line-through;
 	}
+
 	.description {
 		padding-left: 8px
 	}
@@ -53,9 +55,11 @@
 <input id="current_input" hidden value="" />
 <script src="static/tests.js"></script>
 <script>
+
 	let darkmode = false;
 	$("#darkModeBtn").click(function() {
 		darkmode = !darkmode;
+
 		if (darkmode === true) {
 			//this nonsense just loops through the entire DOM
 			$($("*").get().reverse()).each(function(index) {
@@ -68,12 +72,15 @@
 			})
 		}
 	})
+
 /* API CALLS */
+
 function api_get_tasks(day, success_function) {
   var path = 'api/tasks/' + day + '/two_day'
   $.ajax({url:path, type:"GET",
           success:success_function});
 }
+
 function api_get_days(day, success_function) {
   var path = 'api/get_days/'
   path += day
@@ -81,20 +88,24 @@ function api_get_days(day, success_function) {
   $.ajax({url:path, type:"GET",
           success:success_function});
 }
+
 function api_remember_days(success_function) {
     $.ajax({url:"api/remember", type:"GET",
             success:success_function});
 }
+
 function api_new_day(date) {
     console.log('changing the view date to: ', date);
     $.ajax({url:"api/study", type:"POST",
             data:JSON.stringify(date),
             contentType:"application/json; charset=utf-8"});
 }
+
 function api_get_tomorrow(success_function) {
     $.ajax({url:"api/tomorrow", type:"GET",
             success:success_function});
 }
+
 function api_create_task(task, success_function) {
 	console.log("creating task with:", task);
 	$.ajax({
@@ -104,6 +115,7 @@ function api_create_task(task, success_function) {
 		success: success_function
 	});
 }
+
 function api_update_task(task, success_function) {
   console.log("updating task with:", task)
   $.ajax({url:"api/tasks", type:"PUT", 
@@ -111,6 +123,7 @@ function api_update_task(task, success_function) {
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
+
 function api_delete_task(task, success_function) {
   console.log("deleting task with:", task)
   $.ajax({url:"api/tasks", type:"DELETE", 
@@ -118,7 +131,9 @@ function api_delete_task(task, success_function) {
           contentType:"application/json; charset=utf-8",
           success:success_function});
 }
+
 /* KEYPRESS MONITOR */
+
 function input_keypress(event) {
   if (event.target.id != "current_input") {
     $("#current_input").val(event.target.id)
@@ -128,18 +143,24 @@ function input_keypress(event) {
   $("#save_edit-"+id).prop('hidden', false);
   $("#undo_edit-"+id).prop('hidden', false);
 }
+
 /* EVENT HANDLERS */
+
 function move_task(event) {
 	if ($("#current_input").val() != "") { return }
 	console.log("move item", event.target.id)
 	id = event.target.id.replace("move_task-", "");
+
 	let dates;
 	api_remember_days(function(result) {
 		api_get_days(result['savedDate'], function(getdays_result) {
 			dates = getdays_result;
+
 			const target_list = event.target.className.search("today") > 0 ? "tomorrow" : "today";
 			const target_date = dates[target_list];
+
 			api_update_task({ 'id': id, 'startDate': target_date, 'list':target_list },
+
 			function (result) {
 				api_remember_days(function(result) {
 						get_current_tasks(result['savedDate']);
@@ -147,9 +168,14 @@ function move_task(event) {
 			});
 		});
 	});
+
 	// target_list = event.target.className.search("today") > 0 ? "tomorrow" : "today";
 	// api_update_task({ 'id': id, 'list': target_list },
+
+
 }
+
+
 function complete_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("complete item", event.target.id )
@@ -164,6 +190,7 @@ function complete_task(event) {
                     });
                   } );
 }
+
 function edit_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("edit item", event.target.id)
@@ -182,10 +209,12 @@ function edit_task(event) {
   // set the editing flag
   $("#current_input").val(event.target.id)
 }
+
 function save_edit(event) {
 	console.log("save item", event.target.id)
 	id = event.target.id.replace("save_edit-", "");
 	console.log("desc to save = ", $("#input-" + id).val())
+
 	if ($("#input-" + id).val() != "") {
 		if ((id != "today") & (id != "tomorrow")) {
 			api_update_task({ 'id': id, description: $("#input-" + id).val() },
@@ -213,6 +242,7 @@ function save_edit(event) {
 		$("#input-" + id).addClass("error");
 	}
 }
+
 function undo_edit(event) {
   id = event.target.id.replace("undo_edit-","")
   console.log("undo",[id])
@@ -232,6 +262,7 @@ function undo_edit(event) {
   // set the editing flag
   $("#current_input").val("")
 }
+
 function delete_task(event) {
   if ($("#current_input").val() != "") { return }
   console.log("delete item", event.target.id )
@@ -244,10 +275,12 @@ function delete_task(event) {
                     });
                   } );
 }
+
 function display_task(x, converter) {
 	let popup = "";
 	let darkClass = "";
 	if (darkmode) { darkClass = "darkmode"; }
+
 	arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
 	completed = x.completed ? " completed" : "";
 	if ((x.id == "today") || (x.id == "tomorrow")) {
@@ -261,12 +294,13 @@ function display_task(x, converter) {
 			'  <td style="width:72px">' +
 			// '    <span id="filler-' + x.id + '" class="material-icons">more_horiz</span>' +
 			'    <span id="save_edit-' + x.id + '"  class="save_edit w3-green btn '+darkClass+'">जोड़े</span>' +
-			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">रद्द करें</span>' +
+			// '    <span id="undo_edit-' + x.id + '" hidden class="undo_edit material-icons">cancel</span>' +
 			'  </td>' +
 			'</tr>';
 	} else {
 		console.log("id:" + x.id)
 		//console.log(converter)
+
 		if ((x.list == converter['today'])) {
 			x.list = 'today'
 		} 
@@ -274,9 +308,10 @@ function display_task(x, converter) {
 			x.list = 'tomorrow'
 		}
 		arrow = (x.list == "today") ? "arrow_forward" : "arrow_back";
+
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
 			'  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons '+darkClass+'">' + arrow + '</span></td>' +
-			'  <td style="width:65%;"><span style="background-color:' + x.color + '" id="description-' + x.id + '" class="description' + completed + ' '+darkClass+'">' + x.description + '</span>' +
+			'  <td style="width:65%;"><span id="description-' + x.id + '" class="description' + completed + ' '+darkClass+' '+x.color+'">' + x.description + '</span>' +
 			'      <span id="editor-' + x.id + '" hidden>' +
 			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" type="text" autofocus/>' +
 			'      </span>' +
@@ -292,36 +327,42 @@ function display_task(x, converter) {
 		popup = '<div id="dropdown-'+x.id+'" class="dropdown '+darkClass+'">' +
 				'	<h3>रंग चुनें:</h3>' +
 				'	<select id="selColor-'+x.id+'" class="'+darkClass+'">' +
-				'		<option value="#FFFF00" class="'+darkClass+'">पीला</option>' +
-				'		<option value="#00FF00" class="'+darkClass+'">हरा</option>' +
-				'		<option value="lightblue" class="'+darkClass+'">नीला</option>' +
+				'		<option value="Yellow" class="'+darkClass+'">पीला</option>' +
+				'		<option value="Green" class="'+darkClass+'">हरा</option>' +
+				'		<option value="Blue" class="'+darkClass+'">नीला</option>' +
 				'	</select><br>' +
-				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
-				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
+				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="पुष्टि करें" onclick="color_task('+x.id+')"/>' +
+				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="बंद करे" onclick="close_popup('+x.id+')"/>' +
 				'</div>';
 	}
 	$("#task-list-" + x.list).append(t);
 	$("#current_input").val("")
 	$("body").append(popup);
 }
+
 function get_current_tasks(day) {
 	// remove the old tasks
 	$(".task").remove();
 	var dates;
+
 	api_get_days(day, function (result) {
 		dates = result
 		console.log('Using these dates for the task')
 		console.log(dates)
 	});
+
 	document.getElementById("tomorrow-title").innerHTML = day;
+
 	// display the new task editor
 	display_task({ id: "today", list: "today" }, {})
 	display_task({ id: "tomorrow", list: "tomorrow" }, {})
+
 	// display the tasks
 	api_get_tasks(day, function (result) {
 		for (const task of result.tasks) {
 			display_task(task, dates);
 		}
+
 		// wire the response events
 		$(".move_task").click(move_task);
 		$(".description").click(complete_task)
@@ -333,6 +374,7 @@ function get_current_tasks(day) {
 		$("input").keypress(input_keypress);
 	});
 }
+
 function choose_color(id) {
 	const colSelect = document.getElementById("dropdown-"+id);
 	colSelect.style.display = "block";
@@ -349,6 +391,7 @@ function color_task(id){
 		task_id: id,
 		task_color: color
 	};
+
 	$.ajax({
 		url: "api/color_task", type: "PUT",
 		data: JSON.stringify(data),
@@ -361,6 +404,7 @@ function color_task(id){
 		}
 	});
 }
+
 $("#calBtn").click(function() {
 	const container = document.getElementById("calContainer");
 	if (container.style.display == "flex") {
@@ -370,10 +414,25 @@ $("#calBtn").click(function() {
 		container.style.display = "flex";
 	}
 });
+
+function removeCompletedTasks(){
+	$.ajax({
+		url: "/api/delete_completed_tasks", type: "DELETE",
+		
+		success: function() {
+			api_remember_days(function(result) {
+				get_current_tasks(result['savedDate']);
+			});
+		}
+	});
+}
+
+
 $(document).ready(function () {
 	api_get_tomorrow(function (result) {
 		get_current_tasks(result);
 	})
 });
+
 </script>
-% include("Hindi/footer.tpl")
+% include("hindi/footer.tpl")

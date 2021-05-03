@@ -6,10 +6,6 @@
 		<a class="w3-button w3-round w3-teal small-margin small-button" onclick="removeCompletedTasks()"> 
 		 पूरा किया हुआ कार्य </a>
 	</span>
-	<script> function removeCompletedTasks(){
-		
-		}
-	</script>
 	<span class="w3-display-topright">
 		<a class="w3-button w3-round w3-teal small-margin small-button" href="/register">साइन अप करें</a>
 		<a class="w3-button w3-round w3-teal small-margin small-button" href="/login">लॉग इन करें</a>

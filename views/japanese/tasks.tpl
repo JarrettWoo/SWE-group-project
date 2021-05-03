@@ -332,8 +332,8 @@ function display_task(x, converter) {
 				'		<option value="#00FF00" class="'+darkClass+'">緑</option>' +
 				'		<option value="lightblue" class="'+darkClass+'">青</option>' +
 				'	</select><br>' +
-				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
-				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
+				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="確認" onclick="color_task('+x.id+')"/>' +
+				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="終了" onclick="close_popup('+x.id+')"/>' +
 				'</div>';
 	}
 	$("#task-list-" + x.list).append(t);
@@ -415,6 +415,18 @@ $("#calBtn").click(function() {
 		container.style.display = "flex";
 	}
 });
+
+function removeCompletedTasks(){
+	$.ajax({
+		url: "/api/delete_completed_tasks", type: "DELETE",
+		
+		success: function() {
+			api_remember_days(function(result) {
+				get_current_tasks(result['savedDate']);
+			});
+		}
+	});
+}
 
 $(document).ready(function () {
 	api_get_tomorrow(function (result) {
