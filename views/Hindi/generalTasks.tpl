@@ -196,11 +196,11 @@ function display_task(x) {
 			'  </td>' +
 			'</tr>';
 		popup = '<div id="dropdown-'+x.id+'" class="dropdown '+darkClass+'">' +
-				'	<h3>Select highlight color:</h3>' +
+				'	<h3>रंग चुनें:</h3>' +
 				'	<select id="selColor-'+x.id+'" class="'+darkClass+'">' +
-				'		<option value="Yellow" class="'+darkClass+'">Yellow</option>' +
-				'		<option value="Green" class="'+darkClass+'">Green</option>' +
-				'		<option value="Blue" class="'+darkClass+'">Blue</option>' +
+				'		<option value="Yellow" class="'+darkClass+'">पीला</option>' +
+				'		<option value="Green" class="'+darkClass+'">हरा</option>' +
+				'		<option value="Blue" class="'+darkClass+'">नीला</option>' +
 				'	</select><br>' +
 				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
 				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
