@@ -565,6 +565,12 @@ def delete_task():
 	response.headers['Content-Type'] = 'application/json'
 	return json.dumps({'success': True})
 
+@delete('/api/delete_completed_tasks')
+def delete_completed_tasks():
+	#run sql to delete completed tasks
+	task_table = taskbook_db.get_table('task')
+	task_table.delete(completed=1)
+
 @put('/api/color_task')
 def color_task():
 	taskbook_db = dataset.connect('sqlite:///taskbook.db')

@@ -415,6 +415,19 @@ $("#calBtn").click(function() {
 	}
 });
 
+function removeCompletedTasks(){
+	$.ajax({
+		url: "/api/delete_completed_tasks", type: "DELETE",
+		
+		success: function() {
+			api_remember_days(function(result) {
+				get_current_tasks(result['savedDate']);
+			});
+		}
+	});
+}
+
+
 $(document).ready(function () {
 	api_get_tomorrow(function (result) {
 		get_current_tasks(result);
