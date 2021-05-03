@@ -311,7 +311,7 @@ function display_task(x, converter) {
 
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
 			'  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons '+darkClass+'">' + arrow + '</span></td>' +
-			'  <td style="width:65%;"><span style="background-color:' + x.color + '" id="description-' + x.id + '" class="description' + completed + ' '+darkClass+'">' + x.description + '</span>' +
+			'  <td style="width:65%;"><span id="description-' + x.id + '" class="description' + completed + ' '+darkClass+' '+x.color+'">' + x.description + '</span>' +
 			'      <span id="editor-' + x.id + '" hidden>' +
 			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" type="text" autofocus/>' +
 			'      </span>' +
@@ -327,9 +327,9 @@ function display_task(x, converter) {
 		popup = '<div id="dropdown-'+x.id+'" class="dropdown '+darkClass+'">' +
 				'	<h3>Select highlight color:</h3>' +
 				'	<select id="selColor-'+x.id+'" class="'+darkClass+'">' +
-				'		<option value="#FFFF00" class="'+darkClass+'">Yellow</option>' +
-				'		<option value="#00FF00" class="'+darkClass+'">Green</option>' +
-				'		<option value="lightblue" class="'+darkClass+'">Blue</option>' +
+				'		<option value="Yellow" class="'+darkClass+'">Yellow</option>' +
+				'		<option value="Green" class="'+darkClass+'">Green</option>' +
+				'		<option value="Blue" class="'+darkClass+'">Blue</option>' +
 				'	</select><br>' +
 				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
 				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
