@@ -12,13 +12,13 @@ if __name__ == "__main__":
 	task_table = taskbook_db.create_table('task')
 	date_table = taskbook_db.create_table('view')
 	date_table.insert(
-		{"savedDate": taskManager.getdate_tomorrow(taskManager.getdate_today())}
+		{"savedDate": "0000-00-00"}
 	)
 
 	user_db = dataset.connect('sqlite:///user.db')
 	user_table = user_db.get_table('user')
-	user_table.drop()
-	user_table = user_db.create_table('user')
+	#user_table.drop()
+	#user_table = user_db.create_table('user')
 
 	session_db = dataset.connect('sqlite:///session.db')
 	session_table = session_db.get_table('session')
