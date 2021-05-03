@@ -3,6 +3,8 @@
 
 % include("english/Calendar.tpl")
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <style>
 	.save_edit,
 	.undo_edit,
@@ -21,14 +23,30 @@
 	.description {
 		padding-left: 8px
 	}
+
+	.week-container {
+		height:73%;
+		margin-left: 20px;
+		margin-right: 20px;
+		overflow-x:auto;
+		white-space: nowrap;
+	}
+	.week-column {
+		width:300px;
+		display:inline-block;
+		float: none;
+		padding:0px;
+	}
+	.small-button {
+		padding: 5px 8px;
+	}
 </style>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
 <body>
 
-<div class="w3-row taskbook-container">
-	<div class="w3-col w3-container" style="width:14.28%" id="One-container">
+<div class="week-container w3-row taskbook-container">
+	<div class="week-column w3-col w3-container" id="One-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
 			<h1 id="one-title" class="title">Day 1</h1>
 		</div>
@@ -39,7 +57,7 @@
 		</div>
 	</div>
 	<!-- <div class="stripe">&nbsp;</div> -->
-	<div class="w3-col w3-container" style="width:14.28%" id="Two-container">
+	<div class="w3-col w3-container week-column" id="Two-container">
 		<div class="w3-row w3-xxlarge  w3-margin-bottom">
 			<h1 id="two-title" class="title">Day 2</h1>
 		</div>
@@ -49,7 +67,7 @@
 			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 		</div>
 	</div>
-        	<div class="w3-col w3-container" style="width:14.28%" id="Three-container">
+    <div class="w3-col w3-container week-column" id="Three-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
 			<h1 id="three-title" class="title">Day 3</h1>
 		</div>
@@ -60,7 +78,7 @@
 		</div>
 	</div>
 	<!-- <div class="stripe">&nbsp;</div> -->
-	<div class="w3-col w3-container" style="width:14.28%" id="Four-container">
+	<div class="w3-col w3-container week-column" id="Four-container">
 		<div class="w3-row w3-xxlarge  w3-margin-bottom">
 			<h1 id="four-title" class="title">Day 4</h1>
 		</div>
@@ -70,7 +88,7 @@
 			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 		</div>
 	</div>
-    	<div class="w3-col w3-container" style="width:14.28%" id="Five-container">
+    	<div class="w3-col w3-container week-column" id="Five-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
 			<h1 id="five-title" class="title">Day 5</h1>
 		</div>
@@ -81,7 +99,7 @@
 		</div>
 	</div>
 	<!-- <div class="stripe">&nbsp;</div> -->
-	<div class="w3-col w3-container" style="width:14.28%" id="Six-container">
+	<div class="w3-col w3-container week-column" id="Six-container">
 		<div class="w3-row w3-xxlarge  w3-margin-bottom">
 			<h1 id="six-title" class="title">Day 6</h1>
 		</div>
@@ -91,7 +109,7 @@
 			<div class="w3-row w3-margin-bottom w3-margin-top"></div>
 		</div>
 	</div>
-        	<div class="w3-col w3-container" style="width:14.28%" id="Seven-container">
+    <div class="w3-col w3-container week-column" id="Seven-container">
 		<div class="w3-row w3-xxlarge w3-margin-bottom">
 			<h1 id="seven-title" class="title">Day 7</h1>
 		</div>
@@ -302,7 +320,7 @@ function display_task(x, converter) {
 	completed = x.completed ? " completed" : "";
 	if ((x.id == "one") || (x.id == "two") || (x.id == "three") || (x.id == "four") || (x.id == "five") || (x.id == "six") || (x.id == "seven")) {
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
-			'  <td style="width:36px"></td>' +
+			// '  <td style="width:36px"></td>' +
 			'  <td><span id="editor-' + x.id + '">' +
 			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" ' +
 			'          type="text" autofocus placeholder="Add an item..."/>' +
@@ -341,8 +359,8 @@ function display_task(x, converter) {
 		}
 
 		t = '<tr id="task-' + x.id + '" class="task '+darkClass+'">' +
-			'  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons '+darkClass+'">' + arrow + '</span></td>' +
-			'  <td style="width:65%;"><span style="background-color:' + x.color + '" id="description-' + x.id + '" class="description' + completed + ' '+darkClass+'">' + x.description + '</span>' +
+			// '  <td><span id="move_task-' + x.id + '" class="move_task ' + x.list + ' material-icons '+darkClass+'"></span></td>' +
+			'  <td style="width:100%;"><span class="description' + completed + ' '+darkClass+' '+x.color+'">' + x.description + '</span>' +
 			'      <span id="editor-' + x.id + '" hidden>' +
 			'        <input id="input-' + x.id + '" style="height:22px" class="w3-input '+darkClass+'" type="text" autofocus/>' +
 			'      </span>' +
@@ -358,9 +376,9 @@ function display_task(x, converter) {
 		popup = '<div id="dropdown-'+x.id+'" class="dropdown '+darkClass+'">' +
 				'	<h3>Select highlight color:</h3>' +
 				'	<select id="selColor-'+x.id+'" class="'+darkClass+'">' +
-				'		<option value="#FFFF00" class="'+darkClass+'">Yellow</option>' +
-				'		<option value="#00FF00" class="'+darkClass+'">Green</option>' +
-				'		<option value="lightblue" class="'+darkClass+'">Blue</option>' +
+				'		<option value="Yellow" class="'+darkClass+'">Yellow</option>' +
+				'		<option value="Green" class="'+darkClass+'">Green</option>' +
+				'		<option value="Blue" class="'+darkClass+'">Blue</option>' +
 				'	</select><br>' +
 				'	<input class="w3-btn w3-green w3-round small-button'+darkClass+'" type="button" value="Confirm" onclick="color_task('+x.id+')"/>' +
 				'	<input class="w3-btn w3-red w3-round small-button'+darkClass+'" type="button" value="Close" onclick="close_popup('+x.id+')"/>' +
