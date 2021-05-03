@@ -22,7 +22,7 @@
 				<div class="w3-dropdown-content w3-bar-block w3-border">
 					<a href="/english" class="w3-bar-item w3-button">English</a>
 					<a href="/japanese" class="w3-bar-item w3-button">日本語</a>
-					<a href="#" class="w3-bar-item w3-button">("Hindi" in Hindi)</a>
+					<a href="/hindi" class="w3-bar-item w3-button">हिंदी</a>
 				</div>
 			</div>
 		</span>
