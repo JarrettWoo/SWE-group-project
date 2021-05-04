@@ -20,6 +20,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      # Install fabric to allow file to execute
+      - name: setup fabric
+        run: pip3 install fabric
+        
       # Runs a single command using the runners shell
       - name: update the server
         run: python3 deploy/setup-swift.py
