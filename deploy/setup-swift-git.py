@@ -37,12 +37,10 @@ def get_source_code(server):
     # server.run("cd ~/projects/swift; rm -rf .git", hide=False)
 
     # transfer the code to the target machine
-    server.local("rm -rf /home/Jarrett/projects/SWE-group-project/.git")
-    server.local("rm -rf /home/Jarrett/projects/SWE-group-project/deploy/__pycache__")
-    server.local("pushd /home/Jarrett/projects/SWE-group-project; tar cvf /home/Jarrett/swift.tar . ; popd", hide=False)
+    server.local("pushd .; tar cvf ../swift.tar . ; popd", hide=False)
     server.local("ls -la", hide=False)
-    server.local("tar tvf /home/Jarrett/swift.tar", hide=False)
-    server.put("/home/Jarrett/swift.tar","/home/ubuntu/swift.tar")
+    server.local("tar tvf ../swift.tar", hide=False)
+    server.put("../swift.tar","/home/ubuntu/swift.tar")
     server.run("tar tvf /home/ubuntu/swift.tar", hide=False)
     server.run("mkdir /home/ubuntu/projects/swift")
     server.run("pushd /home/ubuntu/projects/swift; tar xvf /home/ubuntu/swift.tar ; popd", hide=False)
