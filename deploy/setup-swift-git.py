@@ -97,10 +97,10 @@ def verify_application_processes(server):
 
 if __name__ == "__main__":
     SERVER_KEY = os.environ.get("SERVER_KEY")
-    key_file = open("Lightsail-Ohio.pem", "x")
+    key_file = open("../Lightsail-Ohio.pem", "x")
     key_file.write(SERVER_KEY)
     key_file.close()
-    server = Server( host = "3.23.101.233", user="ubuntu", key_filename="Lightsail-Ohio.pem")
+    server = Server( host = "3.23.101.233", user="ubuntu", key_filename="../Lightsail-Ohio.pem")
 
     print("stopping application processes")
     stop_application_processes(server)
