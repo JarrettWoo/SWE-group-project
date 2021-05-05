@@ -26,5 +26,7 @@ jobs:
         
       # Runs a single command using the runners shell
       - name: update the server
-        run: python3 deploy/setup-swift.py
+        env: 
+          SERVER_KEY: ${{ secrets.server_key }}
+        run: python3 deploy/setup-swift-git.py
 
