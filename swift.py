@@ -454,9 +454,9 @@ def general():
 		session_table.insert(session)  # put session into database
 	else:
 		session = sessions[0]
-		
+
 	return template(session["language"] + "/generalTasks.tpl")
-	
+
 
 # ---------------------------
 # task REST api
@@ -696,4 +696,4 @@ if PYTHONANYWHERE:
 	application = default_app()
 else:
 	if __name__ == "__main__":
-		run(host='localhost', port=8080, debug=True)
+		run(host='0.0.0.0', port=8080, debug=True)
